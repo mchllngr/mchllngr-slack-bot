@@ -4,7 +4,6 @@ import com.slack.api.bolt.socket_mode.SocketModeApp
 import com.slack.api.model.block.Blocks.asBlocks
 import com.slack.api.model.block.Blocks.section
 import com.slack.api.model.block.composition.BlockCompositions.markdownText
-import com.slack.api.model.block.composition.BlockCompositions.plainText
 import com.slack.api.model.event.AppMentionEvent
 import com.slack.api.model.event.HelloEvent
 
@@ -16,14 +15,16 @@ fun main() {
     // https://slack.dev/java-slack-sdk/guides/getting-started-with-bolt
     // https://slack.dev/java-slack-sdk/guides/getting-started-with-bolt-socket-mode
 
+    val botToken = System.getenv("SLACK_BOT_TOKEN")
+    val appToken = System.getenv("SLACK_APP_TOKEN")
+
     System.setProperty("org.slf4j.simpleLogger.log.com.slack.api", "debug")
     System.setProperty("org.slf4j.simpleLogger.log.notion.api", "debug")
     System.setProperty("SLACK_APP_LOCAL_DEBUG", "debug")
 
     val app = App(
         AppConfig.builder()
-            .singleTeamBotToken(System.getenv("SLACK_BOT_TOKEN"))
-            .signingSecret(System.getenv("SLACK_SIGNING_SECRET"))
+            .singleTeamBotToken(botToken)
             .build()
     )
 
@@ -33,18 +34,16 @@ fun main() {
     }
 
     app.event(AppMentionEvent::class.java) { event, ctx ->
-        ctx.say("<@${event.event.user}> What's up? 1")
         ctx.say(asBlocks(
-            section { it.blockId("foo").text(markdownText("<@${event.event.user}> **What's up?** 2")) },
-            section { it.blockId("foo").text(plainText("<@${event.event.user}> What's up? 3")) }
+            section { it.blockId("foo").text(markdownText("<@${event.event.user}> **What's up?**")) }
         ))
         ctx.ack()
     }
 
-    app.message("test 123") { event , ctx  ->
-        ctx.say("<@${event.event.user}> What's up? message")
+    app.message("test 123") { event, ctx ->
+        ctx.say("<@${event.event.user}> What's up? ${event.event.channel} ${event.event.text}")
         ctx.ack()
     }
 
-    SocketModeApp(app).start()
+    SocketModeApp(appToken, app).start()
 }
