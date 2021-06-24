@@ -1,49 +1,25 @@
 import com.slack.api.bolt.App
 import com.slack.api.bolt.AppConfig
 import com.slack.api.bolt.socket_mode.SocketModeApp
-import com.slack.api.model.block.Blocks.asBlocks
-import com.slack.api.model.block.Blocks.section
-import com.slack.api.model.block.composition.BlockCompositions.markdownText
-import com.slack.api.model.event.AppMentionEvent
-import com.slack.api.model.event.HelloEvent
+import script.registerTestScript
+import util.APP_TOKEN
+import util.BOT_TOKEN
 
 fun main() {
-    // https://api.slack.com/apps/A023Q0JNSCX
-    // https://github.com/slackapi/java-slack-sdk/blob/master/bolt-kotlin-examples/src/main/kotlin/examples/reply/app.kt
-    // https://gist.github.com/seratch/6ab9139d15ad33c9b1e149327b5f14fa
-    // https://slack.dev/java-slack-sdk/guides/bolt-basics
-    // https://slack.dev/java-slack-sdk/guides/getting-started-with-bolt
-    // https://slack.dev/java-slack-sdk/guides/getting-started-with-bolt-socket-mode
-
-    val botToken = System.getenv("SLACK_BOT_TOKEN")
-    val appToken = System.getenv("SLACK_APP_TOKEN")
-
-    System.setProperty("org.slf4j.simpleLogger.log.com.slack.api", "debug")
-    System.setProperty("org.slf4j.simpleLogger.log.notion.api", "debug")
-    System.setProperty("SLACK_APP_LOCAL_DEBUG", "debug")
+    // TODO debug flag -> explain how to set in README
+    if (true) {
+        System.setProperty("org.slf4j.simpleLogger.log.com.slack.api", "debug")
+        System.setProperty("org.slf4j.simpleLogger.log.notion.api", "debug")
+        System.setProperty("SLACK_APP_LOCAL_DEBUG", "debug")
+    }
 
     val app = App(
         AppConfig.builder()
-            .singleTeamBotToken(botToken)
+            .singleTeamBotToken(BOT_TOKEN)
             .build()
     )
 
-    app.event(HelloEvent::class.java) { event, ctx ->
-        ctx.logger.debug("hello $event")
-        ctx.ack()
-    }
+    app.registerTestScript()
 
-    app.event(AppMentionEvent::class.java) { event, ctx ->
-        ctx.say(asBlocks(
-            section { it.blockId("foo").text(markdownText("<@${event.event.user}> **What's up?**")) }
-        ))
-        ctx.ack()
-    }
-
-    app.message("test 123") { event, ctx ->
-        ctx.say("<@${event.event.user}> What's up? ${event.event.channel} ${event.event.text}")
-        ctx.ack()
-    }
-
-    SocketModeApp(appToken, app).start()
+    SocketModeApp(APP_TOKEN, app).start()
 }
