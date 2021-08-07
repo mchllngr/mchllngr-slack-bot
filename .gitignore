@@ -74,6 +74,7 @@ gradle-app.setting
 .idea/modules.xml
 .idea/*.iml
 .idea/modules
+.idea/runConfigurations.xml
 *.iml
 *.ipr
 
