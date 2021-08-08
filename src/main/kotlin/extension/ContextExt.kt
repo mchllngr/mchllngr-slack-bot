@@ -2,12 +2,12 @@ package extension
 
 import com.slack.api.bolt.context.Context
 import com.slack.api.model.Conversation
-import util.BOT_TOKEN
+import servicelocator.ServiceLocator.config
 
 fun Context.getConversation(name: String): Conversation? {
     try {
         return client()
-            .conversationsList { it.token(BOT_TOKEN) }
+            .conversationsList { it.token(config.botToken) }
             .channels
             .find { it.name == name }
     } catch (e: Throwable) {

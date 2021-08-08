@@ -1,8 +1,28 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+buildscript {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("com.squareup.sqldelight:gradle-plugin:_")
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
 plugins {
     kotlin("jvm")
     id("application")
+    id ("com.squareup.sqldelight") version "1.5.1" // TODO use refreshVersions if possible
 }
 
 repositories {
@@ -32,6 +52,18 @@ dependencies {
     implementation("javax.websocket:javax.websocket-api:_")
     implementation("org.glassfish.tyrus.bundles:tyrus-standalone-client:_")
     implementation("org.slf4j:slf4j-simple:_")
+    implementation("com.squareup.sqldelight:jdbc-driver:_")
+    implementation("com.zaxxer:HikariCP:_")
+    implementation("org.mariadb.jdbc:mariadb-java-client:_")
+}
+
+sqldelight {
+    database("Database") {
+        packageName = "db"
+        schemaOutputDirectory = file("src/main/sqldelight/schema")
+        dialect = "mysql"
+        verifyMigrations = true
+    }
 }
 
 tasks.jar {

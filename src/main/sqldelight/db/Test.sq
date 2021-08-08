@@ -1,0 +1,12 @@
+CREATE TABLE test (
+  name TEXT NOT NULL
+);
+
+CREATE INDEX test_name ON test(name);
+
+selectAll:
+SELECT * FROM test;
+
+insert:
+INSERT INTO test(name)
+VALUES (?);
