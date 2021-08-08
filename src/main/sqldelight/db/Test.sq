@@ -5,3 +5,6 @@ FROM test;
 insert:
 INSERT INTO test(name, number)
 VALUES (?, ?);
+
+delete:
+DELETE FROM test;

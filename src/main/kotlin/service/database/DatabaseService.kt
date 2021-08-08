@@ -8,9 +8,15 @@ interface DatabaseService {
 
     fun initialize()
 
+    fun isBotEnabled(): Boolean
+
+    fun setBotEnabled(enabled: Boolean)
+
     fun getTestEntries(): List<Test>
 
     fun insertTest(test: Test)
+
+    fun deleteTests()
 }
 
 class DatabaseServiceImpl(
@@ -42,10 +48,20 @@ class DatabaseServiceImpl(
         }
     }
 
+    override fun isBotEnabled() = runCatching { database.botConfigQueries.selectBotConfig().executeAsOneOrNull()?.enabled }.getOrNull() ?: true
+
+    override fun setBotEnabled(enabled: Boolean) {
+        database.botConfigQueries.updateBotEnabled(enabled)
+    }
+
     override fun getTestEntries() = database.testQueries.selectAll().executeAsList()
 
     override fun insertTest(test: Test) {
         database.testQueries.insert(test.name, test.number)
+    }
+
+    override fun deleteTests() {
+        database.testQueries.delete()
     }
 
     companion object {
