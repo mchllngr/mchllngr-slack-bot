@@ -1,0 +1,4 @@
+selectDbVersion:
+SELECT version
+FROM database_version
+WHERE id = 0;

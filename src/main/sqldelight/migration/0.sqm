@@ -1,0 +1,29 @@
+DROP TABLE IF EXISTS database_version;
+
+CREATE TABLE database_version(
+    id INTEGER NOT NULL PRIMARY KEY,
+    version INTEGER NOT NULL
+);
+
+INSERT INTO database_version(id, version)
+VALUES (0, 1);
+
+
+DROP TABLE IF EXISTS bot_config;
+
+CREATE TABLE bot_config(
+    id INTEGER NOT NULL PRIMARY KEY,
+    enabled BOOLEAN NOT NULL
+);
+
+INSERT INTO bot_config(id, enabled)
+VALUES (0, TRUE);
+
+
+DROP TABLE IF EXISTS test;
+
+CREATE TABLE test(
+    name TEXT NOT NULL
+);
+
+CREATE INDEX test_name ON test(name);

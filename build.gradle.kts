@@ -60,8 +60,9 @@ dependencies {
 sqldelight {
     database("Database") {
         packageName = "db"
-        schemaOutputDirectory = file("src/main/sqldelight/schema")
+        sourceFolders = listOf("sqldelight")
         dialect = "mysql"
+        deriveSchemaFromMigrations = true
         verifyMigrations = true
     }
 }
