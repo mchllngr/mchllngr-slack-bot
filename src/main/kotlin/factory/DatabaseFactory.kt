@@ -4,14 +4,15 @@ import com.squareup.sqldelight.sqlite.driver.asJdbcDriver
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import db.Database
+import servicelocator.ServiceLocator.config
 
 object DatabaseFactory {
 
     fun create(): Database {
         val datasourceConfig = HikariConfig().apply {
-            jdbcUrl = "jdbc:mariadb://localhost:3306/slack-bot"
-            username = "root"
-            password = "mypass"
+            jdbcUrl = "jdbc:mariadb://${config.database.url}"
+            username = config.database.user
+            password = config.database.password
         }
         val dataSource = HikariDataSource(datasourceConfig)
         val driver = dataSource.asJdbcDriver()

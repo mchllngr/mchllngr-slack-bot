@@ -1,8 +1,8 @@
 package util.debug
 
-object DebugModeHandler {
+object DebugMode {
 
-    fun handle(debugMode: Boolean) {
+    fun init(debugMode: Boolean) {
         if (!debugMode) return
 
         System.setProperty("org.slf4j.simpleLogger.log.com.slack.api", "debug")

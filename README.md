@@ -7,7 +7,10 @@ Ham-App-Bot
 |----------------------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | SLACK_BOT_TOKEN      | yes       | The valid bot token value starting with `xoxb-` in your development workspace. To issue a bot token, you need to install your Slack App that has a bot user to your development workspace. Visit the [Slack App configuration page](https://api.slack.com/apps/), choose the app you’re working on, and go to **Settings > Install App** on the left pane (Add `app_mentions:read` bot scope if you see the message saying "Please add at least one feature or permission scope to install your app."). |
 | SLACK_APP_TOKEN      | yes       | The valid app-level token value starting with `xapp-` for your Slack app. To issue an app-level token, visit the [Slack App configuration page](https://api.slack.com/apps/), choose the app you’re working on, and go to **Settings > Basic Information > App-Level Tokens**, and then create a new one with `connections:write` scope.                                                                                                                                                                |
-| DEBUG_MODE           | no        | If set to `true` the bot will work in debug mode and output more logs.                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| DATABASE_URL         | yes       | The URL to the MariaDB-instance (e.g. `localhost:3306/db`).                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| DATABASE_USER        | yes       | The username for the database.                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| DATABASE_PASSWORD    | yes       | The password for the database.                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| DEBUG_MODE           | no        | If set to `true` the bot will work in debug mode and output more logs.                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
 # How to build with Gradle
 
@@ -26,7 +29,13 @@ Ham-App-Bot
 
 * Run the Docker image with the environment variables mentioned in `Available environment variables`
   ```
-  > docker run -d -e SLACK_BOT_TOKEN='xoxb-...' -e SLACK_APP_TOKEN='xapp-...' IMAGE_NAME
+  > docker run -d \
+        -e SLACK_BOT_TOKEN='xoxb-...' \
+        -e SLACK_APP_TOKEN='xapp-...' \
+        -e DATABASE_URL='SOME_URL' \
+        -e DATABASE_USER='SOME_USER' \
+        -e DATABASE_PASSWORD='SOME_PASSWORD' \
+        IMAGE_NAME
   ```
 
 # Helpful links

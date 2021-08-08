@@ -1,20 +1,12 @@
-import com.slack.api.bolt.App
-import com.slack.api.bolt.AppConfig
-import com.slack.api.bolt.socket_mode.SocketModeApp
 import script.registerTestScript
 import servicelocator.ServiceLocator.config
-import util.debug.DebugModeHandler
+import util.debug.DebugMode
+import util.slackbot.SlackBot
 
 fun main() {
-    DebugModeHandler.handle(config.debugMode)
+    DebugMode.init(config.debugMode)
 
-    val app = App(
-        AppConfig.builder()
-            .singleTeamBotToken(config.botToken)
-            .build()
-    )
-
-    app.registerTestScript()
-
-    SocketModeApp(config.appToken, app).start()
+    SlackBot.start {
+        registerTestScript()
+    }
 }

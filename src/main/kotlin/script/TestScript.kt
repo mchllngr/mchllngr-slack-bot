@@ -4,7 +4,7 @@ import com.slack.api.bolt.App
 import com.slack.api.model.block.Blocks
 import com.slack.api.model.block.composition.BlockCompositions
 import com.slack.api.model.event.AppMentionEvent
-import extension.getConversation
+import util.context.getConversation
 
 fun App.registerTestScript() {
     event(AppMentionEvent::class.java) { event, ctx ->
