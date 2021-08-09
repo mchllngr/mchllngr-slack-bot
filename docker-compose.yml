@@ -1,22 +1,31 @@
 version: "3.9"
 
 services:
+  slack-bot:
+    container_name: slack-bot
+    image: mchllngr/slack-bot
+    restart: always
+    environment:
+      SLACK_BOT_TOKEN: xoxb-...
+      SLACK_APP_TOKEN: xapp-...
+      DATABASE_URL: SOME_URL:SOME_PORT/SOME_DATABASE
+      DATABASE_USER: SOME_USERNAME
+      DATABASE_PASSWORD: SOME_PASSWORD
+    depends_on:
+      - db
+
   db:
+    container_name: db
     image: mariadb:10.6
     restart: always
     volumes:
-      - slack-bot-db:/var/lib/mysql
-    ports:
-      - 3306:3306
+      - SOME_VOLUME:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: mypass
-
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
+      MARIADB_ROOT_PASSWORD: SOME_ROOT_PASSWORD
+      MARIADB_DATABASE: SOME_DATABASE
+      MARIADB_USER: SOME_USER
+      MARIADB_PASSWORD: SOME_PASSWORD
 
 volumes:
-  slack-bot-db:
+  SOME_VOLUME:
     external: true
