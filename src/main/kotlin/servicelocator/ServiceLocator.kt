@@ -3,6 +3,7 @@ package servicelocator
 import factory.ConfigFactory
 import factory.DatabaseFactory
 import factory.DatabaseServiceFactory
+import factory.ScriptHandlerFactory
 import factory.SqlDriverFactory
 
 object ServiceLocator {
@@ -14,4 +15,6 @@ object ServiceLocator {
     private val database by lazy { DatabaseFactory.create(databaseDriver) }
 
     val databaseService by lazy { DatabaseServiceFactory.create(databaseDriver, database) }
+
+    val scriptHandler by lazy { ScriptHandlerFactory.create() }
 }

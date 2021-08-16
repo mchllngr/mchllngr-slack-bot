@@ -1,4 +1,4 @@
-import script.registerTestScript
+import script.TestScript
 import servicelocator.ServiceLocator.config
 import servicelocator.ServiceLocator.databaseService
 import util.debug.DebugMode
@@ -10,6 +10,6 @@ fun main() {
     databaseService.initialize()
 
     SlackBot.start {
-        registerTestScript()
+        addScript(TestScript())
     }
 }
