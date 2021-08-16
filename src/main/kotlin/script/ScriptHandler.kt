@@ -1,6 +1,7 @@
 package script
 
 import com.slack.api.bolt.App
+import com.slack.api.model.event.AppHomeOpenedEvent
 import com.slack.api.model.event.MessageEvent
 import util.botenabled.isBotEnabled
 
@@ -20,10 +21,22 @@ class ScriptHandler {
         if (registered) throw IllegalStateException("already registered")
         registered = true
 
-        app.registerMessageEvents()
+        app.registerAppHomeOpenedScripts()
+        app.registerMessageScripts()
     }
 
-    private fun App.registerMessageEvents() {
+    private fun App.registerAppHomeOpenedScripts() {
+        val appHomeOpenedScripts = scripts.filterIsInstance<AppHomeOpenedScript>()
+        event(AppHomeOpenedEvent::class.java) { event, ctx ->
+            if (!isBotEnabled(ctx)) return@event ctx.ack()
+
+            appHomeOpenedScripts.forEach { it.onAppHomeOpenedEvent(event, ctx) }
+
+            ctx.ack()
+        }
+    }
+
+    private fun App.registerMessageScripts() {
         val messageScripts = scripts.filterIsInstance<MessageScript>()
         event(MessageEvent::class.java) { event, ctx ->
             if (!isBotEnabled(ctx)) return@event ctx.ack()
