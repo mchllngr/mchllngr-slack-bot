@@ -5,11 +5,13 @@ import com.slack.api.bolt.context.builtin.EventContext
 import com.slack.api.model.block.Blocks.asBlocks
 import com.slack.api.model.block.Blocks.image
 import com.slack.api.model.block.Blocks.section
-import com.slack.api.model.block.SectionBlock.SectionBlockBuilder
 import com.slack.api.model.block.composition.BlockCompositions.markdownText
 import com.slack.api.model.event.AppHomeOpenedEvent
+import com.slack.api.model.view.View
 import com.slack.api.model.view.Views.view
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 
 class HomeScript : AppHomeOpenedScript {
@@ -18,23 +20,13 @@ class HomeScript : AppHomeOpenedScript {
         event: EventsApiPayload<AppHomeOpenedEvent>,
         ctx: EventContext
     ) {
-        if (event.event.tab != "home") return
+        if (event.event.tab != KEY_HOME) return
 
-        val now = ZonedDateTime.now()
-        val appHomeView = view { view ->
-            view
-                .type("home")
-                .blocks(asBlocks(
-                    section { section: SectionBlockBuilder -> section.text(markdownText { mt -> mt.text(":wave: Hello, App Home! (Last updated: $now)") }) },
-                    image { img -> img.imageUrl("https://www.example.com/foo.png") }
-                ))
-        }
-        // Update the App Home for the given user
-        val res = ctx.client().viewsPublish {
+        ctx.client().viewsPublish {
             it
                 .userId(event.event.user)
-//                .hash(event.event.view.hash) // To protect against possible race conditions
-                .view(appHomeView)
+                .hash(event.event.view.hash) // to protect against possible race conditions
+                .view(getHomeView(event))
         }
 
 //        ctx.say(asBlocks(
@@ -51,5 +43,35 @@ class HomeScript : AppHomeOpenedScript {
 //                )
 //                .text("Typed in 'test'")
 //        }
+    }
+
+    private fun getHomeView(event: EventsApiPayload<AppHomeOpenedEvent>): View {
+        val now: ZonedDateTime = ZonedDateTime.now()
+        val dateFormat: DateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG)
+
+        return view { view ->
+            view
+                .type(KEY_HOME)
+                .blocks(
+                    asBlocks(
+                        section { section ->
+                            section
+                                .text(markdownText { mt ->
+                                    mt.text(":wave: Hallo <@${event.event.user}>! (Zuletzt aktualisiert: ${now.format(dateFormat)})")
+                                })
+                        },
+                        image { img ->
+                            img
+                                .imageUrl("https://upload.wikimedia.org/wikipedia/commons/0/0e/Tree_example_VIS.jpg")
+                                .altText("example image")
+                        }
+                    )
+                )
+        }
+    }
+
+    companion object {
+
+        private const val KEY_HOME = "home"
     }
 }
