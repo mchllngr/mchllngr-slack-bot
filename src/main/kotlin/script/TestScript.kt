@@ -4,6 +4,7 @@ import com.slack.api.app_backend.events.payload.EventsApiPayload
 import com.slack.api.bolt.context.builtin.EventContext
 import com.slack.api.model.event.MessageEvent
 import db.Test
+import script.base.MessageScript
 import servicelocator.ServiceLocator.databaseService
 
 class TestScript : MessageScript {

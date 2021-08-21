@@ -1,4 +1,4 @@
-package script
+package script.base
 
 import com.slack.api.bolt.App
 import com.slack.api.model.event.AppHomeOpenedEvent
@@ -21,12 +21,16 @@ class ScriptHandler {
         if (registered) throw IllegalStateException("already registered")
         registered = true
 
-        app.registerAppHomeOpenedScripts()
-        app.registerMessageScripts()
+        app.apply {
+            registerAppHomeOpenedScripts()
+            registerMessageScripts()
+            registerBlockActionScripts()
+        }
     }
 
     private fun App.registerAppHomeOpenedScripts() {
         val appHomeOpenedScripts = scripts.filterIsInstance<AppHomeOpenedScript>()
+
         event(AppHomeOpenedEvent::class.java) { event, ctx ->
             if (!isBotEnabled(ctx)) return@event ctx.ack()
 
@@ -38,6 +42,7 @@ class ScriptHandler {
 
     private fun App.registerMessageScripts() {
         val messageScripts = scripts.filterIsInstance<MessageScript>()
+
         event(MessageEvent::class.java) { event, ctx ->
             if (!isBotEnabled(ctx)) return@event ctx.ack()
 
@@ -45,5 +50,29 @@ class ScriptHandler {
 
             ctx.ack()
         }
+    }
+
+    private fun App.registerBlockActionScripts() {
+        val blockActionScripts = scripts.filterIsInstance<BlockActionScript>()
+
+        val blockActionIdToScript = mutableMapOf<String, MutableList<BlockActionScript>>()
+        blockActionScripts.forEach { script ->
+            script.blockActionIds.forEach { id ->
+                val scriptsForId = blockActionIdToScript[id]
+                if (scriptsForId == null) blockActionIdToScript[id] = mutableListOf(script)
+                else scriptsForId += script
+            }
+        }
+
+        blockActionIdToScript
+            .forEach { (blockActionId, scripts) ->
+                blockAction(blockActionId) { request, ctx ->
+                    if (!isBotEnabled(ctx)) return@blockAction ctx.ack()
+
+                    scripts.forEach { it.onBlockActionEvent(blockActionId, request, ctx) }
+
+                    ctx.ack()
+                }
+            }
     }
 }

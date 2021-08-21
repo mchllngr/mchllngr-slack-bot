@@ -3,7 +3,7 @@ package util.slackbot
 import com.slack.api.bolt.App
 import com.slack.api.bolt.AppConfig
 import com.slack.api.bolt.socket_mode.SocketModeApp
-import script.ScriptHandler
+import script.base.ScriptHandler
 import servicelocator.ServiceLocator
 
 object SlackBot {

@@ -1,6 +1,6 @@
 package factory
 
-import script.ScriptHandler
+import script.base.ScriptHandler
 
 object ScriptHandlerFactory {
 
