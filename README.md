@@ -1,4 +1,4 @@
-Ham-App-Bot
+Slack-Bot
 ---
 
 # Available environment variables

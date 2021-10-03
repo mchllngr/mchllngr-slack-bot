@@ -14,7 +14,7 @@ RUN gradle clean build --no-daemon
 FROM adoptopenjdk/openjdk16:debianslim-jre
 
 # Copy jar into runtime image
-COPY --from=builder ./home/gradle/build/libs/hh-app-bot-2.0.jar ./bot.jar
+COPY --from=builder ./home/gradle/build/libs/mchllngr-slack-bot-1.0.jar ./bot.jar
 
 # Run it
 CMD [ "java", "-jar",  "./bot.jar" ]
