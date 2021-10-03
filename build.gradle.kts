@@ -29,8 +29,8 @@ repositories {
     mavenCentral()
 }
 
-group = "de.check24.hamappbot"
-version = "2.0"
+group = "de.mchllngr.slackbot"
+version = "1.0"
 
 val compileKotlin: KotlinCompile by tasks
 val compileTestKotlin: KotlinCompile by tasks
