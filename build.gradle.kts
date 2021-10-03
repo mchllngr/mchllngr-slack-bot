@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.squareup.sqldelight:gradle-plugin:_")
+        classpath(Square.sqlDelight.gradlePlugin)
     }
 }
 
@@ -22,7 +22,7 @@ allprojects {
 plugins {
     kotlin("jvm")
     id("application")
-    id ("com.squareup.sqldelight") version "1.5.1" // TODO use refreshVersions if possible
+    id("com.squareup.sqldelight")
 }
 
 repositories {
@@ -52,7 +52,7 @@ dependencies {
     implementation("javax.websocket:javax.websocket-api:_")
     implementation("org.glassfish.tyrus.bundles:tyrus-standalone-client:_")
     implementation("org.slf4j:slf4j-simple:_")
-    implementation("com.squareup.sqldelight:jdbc-driver:_")
+    implementation(Square.sqlDelight.drivers.jdbc)
     implementation("com.zaxxer:HikariCP:_")
     implementation("org.mariadb.jdbc:mariadb-java-client:_")
 }
