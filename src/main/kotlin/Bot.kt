@@ -3,7 +3,7 @@ import script.TestScript
 import servicelocator.ServiceLocator.config
 import servicelocator.ServiceLocator.databaseService
 import util.debug.DebugMode
-import util.slackbot.SlackBot
+import util.slack.bot.SlackBot
 
 fun main() {
     DebugMode.init(config.debugMode)
