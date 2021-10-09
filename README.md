@@ -1,7 +1,8 @@
-Slack-Bot
+# Slack-Bot
+
 ---
 
-# Available environment variables
+## Available environment variables
 
 | Environment variable | Mandatory | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 |----------------------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -12,7 +13,7 @@ Slack-Bot
 | DATABASE_PASSWORD    | yes       | The password for the database.                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | DEBUG_MODE           | no        | If set to `true` the bot will work in debug mode and output more logs.                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
-# How to build with Gradle
+## How to build with Gradle
 
 * Set the environment variables mentioned in `Available environment variables`
 * Run the bot
@@ -20,7 +21,7 @@ Slack-Bot
   > ./gradlew run
   ```
 
-# How to build with Docker
+## How to build with Docker
 
 * Build the Docker image
   ```
@@ -38,12 +39,13 @@ Slack-Bot
         IMAGE_NAME
   ```
 
-# Helpful links
+## Helpful links
 
 * [Slack App configuration page](https://api.slack.com/apps/)
 * [Slack API Docs](https://api.slack.com/docs)
 
-# TODO
+## TODO
 
-1. add `help`-command
-2. add `update`-command which pulls from repo and restarts the bot
+1. add section about how to configure the bot on [Slack App configuration page](https://api.slack.com/apps/)
+2. add `help`-command
+3. add `update`-command which pulls from repo and restarts the bot

@@ -1,3 +1,5 @@
+@file:Suppress("GradlePackageUpdate")
+
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
@@ -36,6 +38,7 @@ val compileKotlin: KotlinCompile by tasks
 val compileTestKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
     jvmTarget = JavaVersion.VERSION_16.toString()
+    freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
 }
 compileTestKotlin.kotlinOptions {
     jvmTarget = JavaVersion.VERSION_16.toString()

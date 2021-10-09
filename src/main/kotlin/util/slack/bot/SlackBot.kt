@@ -1,4 +1,4 @@
-package util.slackbot
+package util.slack.bot
 
 import com.slack.api.bolt.App
 import com.slack.api.bolt.AppConfig
