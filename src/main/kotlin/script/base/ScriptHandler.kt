@@ -75,4 +75,9 @@ class ScriptHandler {
                 }
             }
     }
+
+    companion object {
+
+        fun create() = ScriptHandler()
+    }
 }
