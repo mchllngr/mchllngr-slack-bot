@@ -53,7 +53,7 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
 
         ctx.updateHomeView(
             event.event.user,
-            event.event.view.hash
+            event.event.view?.hash.orEmpty()
         )
     }
 
@@ -112,8 +112,6 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
         user: User?
     ): List<LayoutBlock> {
         val realName = user?.realName
-
-        println("user: $user")
 
         return listOf(
             headerSection(
