@@ -3,6 +3,7 @@ import kotlin.collections.List;
 import model.TeamId;
 import model.UserId;
 
+
 DROP TABLE IF EXISTS user;
 
 CREATE TABLE user(
@@ -17,11 +18,28 @@ DROP TABLE IF EXISTS team;
 
 CREATE TABLE team(
     id VARCHAR(256) AS TeamId NOT NULL PRIMARY KEY,
-    admin VARCHAR(256) AS List<UserId> NOT NULL,
-    user VARCHAR(256) AS List<UserId> NOT NULL
+    name VARCHAR(256) NOT NULL
 );
 
 CREATE INDEX team_id ON team(id);
+
+
+DROP TABLE IF EXISTS team_admin;
+
+CREATE TABLE team_admin(
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    teamId VARCHAR(256) AS TeamId NOT NULL, -- TODO Foreign Key
+    userId VARCHAR(256) AS UserId NOT NULL -- TODO Foreign Key
+);
+
+
+DROP TABLE IF EXISTS team_user;
+
+CREATE TABLE team_user(
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    teamId VARCHAR(256) AS TeamId NOT NULL, -- TODO Foreign Key
+    userId VARCHAR(256) AS UserId NOT NULL -- TODO Foreign Key
+);
 
 
 UPDATE database_version

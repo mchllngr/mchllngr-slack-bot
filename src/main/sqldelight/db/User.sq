@@ -2,6 +2,8 @@ selectAll:
 SELECT *
 FROM user;
 
+-- selectUsersInTeam:
+
 insert:
 INSERT INTO user(id, birthdate)
 VALUES (?, ?);
