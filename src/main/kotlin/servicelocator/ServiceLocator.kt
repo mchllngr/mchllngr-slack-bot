@@ -6,8 +6,8 @@ import factory.SqlDriverFactory
 import model.Config
 import script.base.ScriptHandler
 import service.bot.BotConfigService
-import service.team.TestService
-import service.test.TeamService
+import service.team.TeamService
+import service.test.TestService
 import service.user.UserService
 
 object ServiceLocator {
