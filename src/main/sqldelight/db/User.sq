@@ -1,0 +1,11 @@
+selectAll:
+SELECT *
+FROM user;
+
+insert:
+INSERT INTO user(id, birthdate)
+VALUES (?, ?);
+
+delete:
+DELETE FROM user
+WHERE id = ?;

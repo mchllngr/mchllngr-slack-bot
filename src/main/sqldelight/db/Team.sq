@@ -1,0 +1,11 @@
+selectAll:
+SELECT *
+FROM team;
+
+insert:
+INSERT INTO team(id, admin, user)
+VALUES (?, ?, ?);
+
+delete:
+DELETE FROM team
+WHERE id = ?;
