@@ -1,5 +1,6 @@
 ALTER TABLE test ADD COLUMN number INTEGER;
 
+
 UPDATE database_version
 SET version = 2
 WHERE id = 0;
