@@ -27,7 +27,7 @@ CREATE INDEX team_id ON team(id);
 DROP TABLE IF EXISTS team_admin;
 
 CREATE TABLE team_admin(
-    id INTEGER NOT NULL AUTO_INCREMENT,
+    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     teamId VARCHAR(256) AS TeamId NOT NULL, -- TODO Foreign Key
     userId VARCHAR(256) AS UserId NOT NULL -- TODO Foreign Key
 );
@@ -36,7 +36,7 @@ CREATE TABLE team_admin(
 DROP TABLE IF EXISTS team_user;
 
 CREATE TABLE team_user(
-    id INTEGER NOT NULL AUTO_INCREMENT,
+    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     teamId VARCHAR(256) AS TeamId NOT NULL, -- TODO Foreign Key
     userId VARCHAR(256) AS UserId NOT NULL -- TODO Foreign Key
 );
