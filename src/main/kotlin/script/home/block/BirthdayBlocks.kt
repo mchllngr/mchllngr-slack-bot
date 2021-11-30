@@ -1,9 +1,15 @@
 package script.home.block
 
-import com.slack.api.model.block.Blocks
+import com.slack.api.model.block.Blocks.actions
+import com.slack.api.model.block.Blocks.section
 import com.slack.api.model.block.LayoutBlock
-import com.slack.api.model.block.composition.BlockCompositions
-import com.slack.api.model.block.element.BlockElements
+import com.slack.api.model.block.composition.BlockCompositions.confirmationDialog
+import com.slack.api.model.block.composition.BlockCompositions.markdownText
+import com.slack.api.model.block.composition.BlockCompositions.option
+import com.slack.api.model.block.composition.BlockCompositions.plainText
+import com.slack.api.model.block.element.BlockElements.button
+import com.slack.api.model.block.element.BlockElements.checkboxes
+import com.slack.api.model.block.element.BlockElements.datePicker
 import util.slack.block.headerSection
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -17,28 +23,28 @@ class BirthdayBlocks {
 
         return listOf(
             headerSection(text = ":birthday: Geburtstag", emoji = true),
-            Blocks.section { section ->
+            section { section ->
                 section
-                    .text(BlockCompositions.plainText("Dein Geburtstag"))
+                    .text(plainText("Dein Geburtstag"))
                     .accessory(
-                        BlockElements.datePicker {
+                        datePicker {
                             it.actionId(ACTION_USER_BIRTHDAY_CHANGED)
                             it.initialDate(birthday.format(datePickerFormat))
-                            it.placeholder(BlockCompositions.plainText("Geburtstag wählen"))
+                            it.placeholder(plainText("Geburtstag wählen"))
                         }
                     )
             },
-            Blocks.actions { action ->
+            actions { action ->
                 action.elements(
                     listOf(
-                        BlockElements.checkboxes {
+                        checkboxes {
                             it.actionId(ACTION_USER_BIRTHDAY_INCLUDE_YEAR_CHANGED)
                             it.options(
                                 listOf(
-                                    BlockCompositions.option { option ->
+                                    option { option ->
                                         option.value("TODO_value")
-                                        option.text(BlockCompositions.markdownText("*Geburtsjahr einbeziehen*"))
-                                        option.description(BlockCompositions.plainText("Entscheidet ob das Geburtsjahr anderen Nutzern angezeigt und für die Berechnung des Alters benutzt wird."))
+                                        option.text(markdownText("*Geburtsjahr einbeziehen*"))
+                                        option.description(plainText("Entscheidet ob das Geburtsjahr anderen Nutzern angezeigt und für die Berechnung des Alters benutzt wird."))
                                     }
                                 )
                             )
@@ -46,20 +52,20 @@ class BirthdayBlocks {
                     )
                 )
             },
-            Blocks.section { section ->
+            section { section ->
                 section
-                    .text(BlockCompositions.plainText("Geburtsdatum entfernen"))
+                    .text(plainText("Geburtsdatum entfernen"))
                     .accessory(
-                        BlockElements.button {
+                        button {
                             it.actionId(ACTION_USER_BIRTHDAY_REMOVED)
                             it.value("TODO_value")
-                            it.text(BlockCompositions.plainText(":warning: Entfernen", true))
+                            it.text(plainText(":warning: Entfernen", true))
                             it.confirm(
-                                BlockCompositions.confirmationDialog { dialog ->
-                                    dialog.title(BlockCompositions.plainText("Geburtsdatum entfernen"))
-                                    dialog.text(BlockCompositions.plainText("Bist du sicher?"))
-                                    dialog.confirm(BlockCompositions.plainText("Entfernen"))
-                                    dialog.deny(BlockCompositions.plainText("Abbrechen"))
+                                confirmationDialog { dialog ->
+                                    dialog.title(plainText("Geburtsdatum entfernen"))
+                                    dialog.text(plainText("Bist du sicher?"))
+                                    dialog.confirm(plainText("Entfernen"))
+                                    dialog.deny(plainText("Abbrechen"))
                                 }
                             )
                         }
