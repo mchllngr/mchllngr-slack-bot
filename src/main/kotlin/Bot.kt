@@ -1,5 +1,4 @@
-import script.HomeScript
-import script.TestScript
+import script.home.HomeScript
 import servicelocator.ServiceLocator.config
 import servicelocator.ServiceLocator.dataStore
 import util.debug.DebugMode
@@ -12,6 +11,5 @@ fun main() {
 
     SlackBot.start {
         addScript(HomeScript())
-        addScript(TestScript())
     }
 }

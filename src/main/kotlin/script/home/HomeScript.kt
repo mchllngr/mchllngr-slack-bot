@@ -1,4 +1,4 @@
-package script
+package script.home
 
 import com.slack.api.app_backend.events.payload.EventsApiPayload
 import com.slack.api.bolt.context.Context
