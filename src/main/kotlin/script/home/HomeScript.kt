@@ -33,6 +33,8 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
     private val adminBlocks by lazy { AdminBlocks() }
     private val footerBlocks by lazy { FooterBlocks() }
 
+    override val name = "HOME"
+
     override val blockActionIds = listOf(
         BirthdayBlocks.ACTION_USER_BIRTHDAY_CHANGED,
         BirthdayBlocks.ACTION_USER_BIRTHDAY_INCLUDE_YEAR_CHANGED,

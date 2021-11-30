@@ -7,14 +7,15 @@ import util.botenabled.isBotEnabled
 
 class ScriptHandler {
 
-    private val scripts = mutableListOf<Script>()
+    private val scripts = mutableMapOf<String, Script>()
 
     private var registered = false
 
     fun addScript(script: Script) {
         if (registered) throw IllegalStateException("already registered")
+        if (script.name in scripts) throw IllegalStateException("a Script with the name '${script.name}' was already added")
 
-        if (script !in scripts) scripts += script
+        scripts += script.name to script
     }
 
     fun registerScripts(app: App) {
@@ -29,7 +30,7 @@ class ScriptHandler {
     }
 
     private fun App.registerAppHomeOpenedScripts() {
-        val appHomeOpenedScripts = scripts.filterIsInstance<AppHomeOpenedScript>()
+        val appHomeOpenedScripts = scripts.values.filterIsInstance<AppHomeOpenedScript>()
 
         event(AppHomeOpenedEvent::class.java) { event, ctx ->
             if (!isBotEnabled(ctx)) return@event ctx.ack()
@@ -41,7 +42,7 @@ class ScriptHandler {
     }
 
     private fun App.registerMessageScripts() {
-        val messageScripts = scripts.filterIsInstance<MessageScript>()
+        val messageScripts = scripts.values.filterIsInstance<MessageScript>()
 
         event(MessageEvent::class.java) { event, ctx ->
             if (!isBotEnabled(ctx)) return@event ctx.ack()
@@ -53,7 +54,7 @@ class ScriptHandler {
     }
 
     private fun App.registerBlockActionScripts() {
-        val blockActionScripts = scripts.filterIsInstance<BlockActionScript>()
+        val blockActionScripts = scripts.values.filterIsInstance<BlockActionScript>()
 
         val blockActionIdToScript = mutableMapOf<String, MutableList<BlockActionScript>>()
         blockActionScripts.forEach { script ->
