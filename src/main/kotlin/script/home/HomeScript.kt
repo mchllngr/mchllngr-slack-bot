@@ -19,6 +19,8 @@ import script.home.block.FooterBlocks
 import script.home.block.HelloBlocks
 import script.home.block.TeamBlocks
 import script.home.block.UserDataBlocks
+import servicelocator.ServiceLocator.adminService
+import servicelocator.ServiceLocator.scriptHandler
 import util.context.getUser
 import java.time.ZonedDateTime
 
@@ -30,7 +32,7 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
     private val birthdayBlocks by lazy { BirthdayBlocks() }
     private val birthdayReminderBlocks by lazy { BirthdayReminderBlocks() }
     private val userDataBlocks by lazy { UserDataBlocks() }
-    private val adminBlocks by lazy { AdminBlocks() }
+    private val adminBlocks by lazy { AdminBlocks(adminService, scriptHandler) }
     private val footerBlocks by lazy { FooterBlocks() }
 
     override val name = "HOME"
@@ -42,7 +44,8 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
         BirthdayReminderBlocks.ACTION_BIRTHDAY_REMINDER_ENABLED_CHANGED,
         BirthdayReminderBlocks.ACTION_BIRTHDAY_REMINDER_ADD_ADDITIONAL_SELECTED,
         UserDataBlocks.ACTION_USER_DATA_SHOW_SELECTED,
-        UserDataBlocks.ACTION_USER_DATA_REMOVE_ALL_SELECTED
+        UserDataBlocks.ACTION_USER_DATA_REMOVE_ALL_SELECTED,
+        AdminBlocks.ACTION_BOT_ENABLED_SELECTED
     )
 
     override fun onAppHomeOpenedEvent(
@@ -62,6 +65,10 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
         request: BlockActionRequest,
         ctx: ActionContext
     ) {
+        when (blockActionId) {
+            AdminBlocks.ACTION_BOT_ENABLED_SELECTED -> adminBlocks.onActionBotEnabledSelected(request, ctx)
+        }
+
         ctx.updateHomeView(
             request.payload.user.id,
             request.payload.view.hash

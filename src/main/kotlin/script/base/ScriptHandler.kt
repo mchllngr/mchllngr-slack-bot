@@ -3,7 +3,10 @@ package script.base
 import com.slack.api.bolt.App
 import com.slack.api.model.event.AppHomeOpenedEvent
 import com.slack.api.model.event.MessageEvent
+import script.home.block.AdminBlocks
 import util.botenabled.isBotEnabled
+import util.context.getUser
+import util.slack.user.isBotAdmin
 
 class ScriptHandler {
 
@@ -33,7 +36,8 @@ class ScriptHandler {
         val appHomeOpenedScripts = scripts.values.filterIsInstance<AppHomeOpenedScript>()
 
         event(AppHomeOpenedEvent::class.java) { event, ctx ->
-            if (!isBotEnabled(ctx)) return@event ctx.ack()
+            // TODO find some other way to always show admins the home-tab
+            if (!ctx.getUser(event.event.user).isBotAdmin && !isBotEnabled(ctx)) return@event ctx.ack()
 
             appHomeOpenedScripts.forEach { it.onAppHomeOpenedEvent(event, ctx) }
 
@@ -68,7 +72,8 @@ class ScriptHandler {
         blockActionIdToScript
             .forEach { (blockActionId, scripts) ->
                 blockAction(blockActionId) { request, ctx ->
-                    if (!isBotEnabled(ctx)) return@blockAction ctx.ack()
+                    // TODO find some other way to handle admin actions
+                    if (blockActionId != AdminBlocks.ACTION_BOT_ENABLED_SELECTED && !isBotEnabled(ctx)) return@blockAction ctx.ack()
 
                     scripts.forEach { it.onBlockActionEvent(blockActionId, request, ctx) }
 
