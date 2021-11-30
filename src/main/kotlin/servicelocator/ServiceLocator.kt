@@ -5,7 +5,7 @@ import factory.DatabaseFactory
 import factory.SqlDriverFactory
 import model.Config
 import script.base.ScriptHandler
-import service.bot.BotConfigService
+import service.admin.AdminService
 import service.team.TeamService
 import service.user.UserService
 
@@ -21,7 +21,7 @@ object ServiceLocator {
 
     val dataStore by lazy { DataStore.create(databaseDriver, database) }
 
-    val botConfigService by lazy { BotConfigService.create(dataStore) }
+    val adminService by lazy { AdminService.create(dataStore) }
 
     val userService by lazy { UserService.create(dataStore) }
 

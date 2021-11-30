@@ -12,6 +12,7 @@ import com.slack.api.model.event.AppHomeOpenedEvent
 import com.slack.api.model.view.Views.view
 import script.base.AppHomeOpenedScript
 import script.base.BlockActionScript
+import script.home.block.AdminBlocks
 import script.home.block.BirthdayBlocks
 import script.home.block.BirthdayReminderBlocks
 import script.home.block.FooterBlocks
@@ -29,6 +30,7 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
     private val birthdayBlocks by lazy { BirthdayBlocks() }
     private val birthdayReminderBlocks by lazy { BirthdayReminderBlocks() }
     private val userDataBlocks by lazy { UserDataBlocks() }
+    private val adminBlocks by lazy { AdminBlocks() }
     private val footerBlocks by lazy { FooterBlocks() }
 
     override val blockActionIds = listOf(
@@ -104,6 +106,11 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
 
             addAll(userDataBlocks.createBlocks())
             add(divider())
+
+            adminBlocks.createBlocks(user)?.let { blocks ->
+                addAll(blocks)
+                add(divider())
+            }
 
             addAll(footerBlocks.createBlocks(now))
         }

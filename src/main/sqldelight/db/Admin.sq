@@ -1,0 +1,9 @@
+selectAdmin:
+SELECT *
+FROM admin
+WHERE id = 0;
+
+updateBotEnabled:
+UPDATE admin
+SET bot_enabled = ?
+WHERE id = 0;

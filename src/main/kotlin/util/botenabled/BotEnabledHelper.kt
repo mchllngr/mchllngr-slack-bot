@@ -3,10 +3,10 @@ package util.botenabled
 import com.slack.api.bolt.context.ActionRespondUtility
 import com.slack.api.bolt.context.Context
 import com.slack.api.bolt.context.SayUtility
-import servicelocator.ServiceLocator.botConfigService
+import servicelocator.ServiceLocator.adminService
 
 fun isBotEnabled(ctx: Context): Boolean {
-    val botEnabled = botConfigService.isBotEnabled()
+    val botEnabled = adminService.isBotEnabled()
 
     if (!botEnabled) {
         val message = "TODO Bot is disabled" // TODO find out what to do (if something should be done at all)

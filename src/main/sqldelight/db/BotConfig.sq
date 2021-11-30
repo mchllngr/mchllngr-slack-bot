@@ -1,9 +1,0 @@
-selectBotConfig:
-SELECT *
-FROM bot_config
-WHERE id = 0;
-
-updateBotEnabled:
-UPDATE bot_config
-SET enabled = ?
-WHERE id = 0;
