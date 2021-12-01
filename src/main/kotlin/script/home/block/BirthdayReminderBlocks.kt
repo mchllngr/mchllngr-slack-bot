@@ -14,23 +14,21 @@ class BirthdayReminderBlocks {
 
     fun createBlocks(): List<LayoutBlock> = listOf(
         headerSection(text = ":date: Geburtstagserinnerungen", emoji = true),
-        actions { action ->
-            action.elements(
-                listOf(
-                    checkboxes {
-                        it.actionId(ACTION_BIRTHDAY_REMINDER_ENABLED_CHANGED)
-                        it.options(
-                            listOf(
-                                option { option ->
-                                    option.value("TODO_value")
-                                    option.text(plainText("Geburtstagserinnerungen erhalten"))
-                                }
-                            )
+        actions(
+            listOf(
+                checkboxes {
+                    it.actionId(ACTION_BIRTHDAY_REMINDER_ENABLED_CHANGED)
+                    it.options(
+                        listOf(
+                            option { option ->
+                                option.value("TODO_value")
+                                option.text(plainText("Geburtstagserinnerungen erhalten"))
+                            }
                         )
-                    }
-                )
+                    )
+                }
             )
-        },
+        ),
         section { section ->
             section
                 .text(plainText("Möchtest du an weitere Geburtstage außerhalb deines Teams erinnert werden?"))

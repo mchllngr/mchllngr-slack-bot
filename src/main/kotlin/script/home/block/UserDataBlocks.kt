@@ -23,25 +23,23 @@ class UserDataBlocks {
                     }
                 )
         },
-        actions { action ->
-            action.elements(
-                listOf(
-                    button {
-                        it.actionId(ACTION_USER_DATA_REMOVE_ALL_SELECTED)
-                        it.value("TODO_value")
-                        it.text(plainText(":warning: Nutzerdaten löschen", true))
-                        it.confirm(
-                            confirmationDialog { dialog ->
-                                dialog.title(plainText("Nutzerdaten löschen"))
-                                dialog.text(plainText("Bist du sicher?\n\n:warning: Diese Aktion kann nicht rückgängig gemacht werden! :warning:", true))
-                                dialog.confirm(plainText("Alles löschen"))
-                                dialog.deny(plainText("Abbrechen"))
-                            }
-                        )
-                    }
-                )
+        actions(
+            listOf(
+                button {
+                    it.actionId(ACTION_USER_DATA_REMOVE_ALL_SELECTED)
+                    it.value("TODO_value")
+                    it.text(plainText(":warning: Nutzerdaten löschen", true))
+                    it.confirm(
+                        confirmationDialog { dialog ->
+                            dialog.title(plainText("Nutzerdaten löschen"))
+                            dialog.text(plainText("Bist du sicher?\n\n:warning: Diese Aktion kann nicht rückgängig gemacht werden! :warning:", true))
+                            dialog.confirm(plainText("Alles löschen"))
+                            dialog.deny(plainText("Abbrechen"))
+                        }
+                    )
+                }
             )
-        }
+        )
     )
 
     companion object {

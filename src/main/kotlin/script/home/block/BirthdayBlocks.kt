@@ -34,24 +34,22 @@ class BirthdayBlocks {
                         }
                     )
             },
-            actions { action ->
-                action.elements(
-                    listOf(
-                        checkboxes {
-                            it.actionId(ACTION_USER_BIRTHDAY_INCLUDE_YEAR_CHANGED)
-                            it.options(
-                                listOf(
-                                    option { option ->
-                                        option.value("TODO_value")
-                                        option.text(markdownText("*Geburtsjahr einbeziehen*"))
-                                        option.description(plainText("Entscheidet ob das Geburtsjahr anderen Nutzern angezeigt und für die Berechnung des Alters benutzt wird."))
-                                    }
-                                )
+            actions(
+                listOf(
+                    checkboxes {
+                        it.actionId(ACTION_USER_BIRTHDAY_INCLUDE_YEAR_CHANGED)
+                        it.options(
+                            listOf(
+                                option { option ->
+                                    option.value("TODO_value")
+                                    option.text(markdownText("*Geburtsjahr einbeziehen*"))
+                                    option.description(plainText("Entscheidet ob das Geburtsjahr anderen Nutzern angezeigt und für die Berechnung des Alters benutzt wird."))
+                                }
                             )
-                        }
-                    )
+                        )
+                    }
                 )
-            },
+            ),
             section { section ->
                 section
                     .text(plainText("Geburtsdatum entfernen"))
