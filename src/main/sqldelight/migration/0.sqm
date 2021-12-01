@@ -1,7 +1,7 @@
 import java.time.LocalDate;
-import kotlin.collections.List;
-import model.TeamId;
-import model.UserId;
+import model.script.ScriptId;
+import model.team.TeamId;
+import model.user.UserId;
 
 -- database_version
 DROP TABLE IF EXISTS database_version;
@@ -24,6 +24,16 @@ CREATE TABLE admin(
 
 INSERT INTO admin(id, bot_enabled)
 VALUES (0, TRUE);
+
+-- script
+DROP TABLE IF EXISTS script;
+
+CREATE TABLE script(
+    id VARCHAR(256) AS ScriptId NOT NULL PRIMARY KEY,
+    enabled BOOLEAN NOT NULL DEFAULT 1
+);
+
+CREATE INDEX script_id ON script(id);
 
 -- user
 DROP TABLE IF EXISTS user;
@@ -50,8 +60,9 @@ DROP TABLE IF EXISTS team_admin;
 
 CREATE TABLE team_admin(
     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    teamId VARCHAR(256) AS TeamId NOT NULL, -- TODO Foreign Key
-    userId VARCHAR(256) AS UserId NOT NULL -- TODO Foreign Key
+    teamId VARCHAR(256) AS TeamId NOT NULL,
+    userId VARCHAR(256) AS UserId NOT NULL,
+    FOREIGN KEY (teamId) REFERENCES team(id)
 );
 
 -- team_user
@@ -59,6 +70,7 @@ DROP TABLE IF EXISTS team_user;
 
 CREATE TABLE team_user(
     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    teamId VARCHAR(256) AS TeamId NOT NULL, -- TODO Foreign Key
-    userId VARCHAR(256) AS UserId NOT NULL -- TODO Foreign Key
+    teamId VARCHAR(256) AS TeamId NOT NULL,
+    userId VARCHAR(256) AS UserId NOT NULL,
+    FOREIGN KEY (teamId) REFERENCES team(id)
 );

@@ -1,4 +1,4 @@
-package util.botenabled
+package util.bot
 
 import com.slack.api.bolt.context.ActionRespondUtility
 import com.slack.api.bolt.context.Context

@@ -10,6 +10,8 @@ import com.slack.api.model.block.Blocks.divider
 import com.slack.api.model.block.LayoutBlock
 import com.slack.api.model.event.AppHomeOpenedEvent
 import com.slack.api.model.view.Views.view
+import model.script.ScriptId
+import model.user.UserId
 import script.base.AppHomeOpenedScript
 import script.base.BlockActionScript
 import script.home.block.AdminBlocks
@@ -21,7 +23,7 @@ import script.home.block.TeamBlocks
 import script.home.block.UserDataBlocks
 import servicelocator.ServiceLocator.adminService
 import servicelocator.ServiceLocator.scriptHandler
-import util.context.getUser
+import util.slack.context.getUser
 import java.time.ZonedDateTime
 
 @OptIn(ExperimentalStdlibApi::class)
@@ -35,7 +37,7 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
     private val adminBlocks by lazy { AdminBlocks(adminService, scriptHandler) }
     private val footerBlocks by lazy { FooterBlocks() }
 
-    override val name = "HOME"
+    override val id = ID
 
     override val blockActionIds = listOf(
         BirthdayBlocks.ACTION_USER_BIRTHDAY_CHANGED,
@@ -45,7 +47,8 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
         BirthdayReminderBlocks.ACTION_BIRTHDAY_REMINDER_ADD_ADDITIONAL_SELECTED,
         UserDataBlocks.ACTION_USER_DATA_SHOW_SELECTED,
         UserDataBlocks.ACTION_USER_DATA_REMOVE_ALL_SELECTED,
-        AdminBlocks.ACTION_BOT_ENABLED_SELECTED
+        AdminBlocks.ACTION_BOT_ENABLED_SELECTED,
+        AdminBlocks.ACTION_SCRIPT_ENABLED_SELECTED
     )
 
     override fun onAppHomeOpenedEvent(
@@ -55,7 +58,7 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
         if (event.event.tab != KEY_HOME) return
 
         ctx.updateHomeView(
-            event.event.user,
+            UserId(event.event.user),
             event.event.view?.hash.orEmpty()
         )
     }
@@ -67,23 +70,24 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
     ) {
         when (blockActionId) {
             AdminBlocks.ACTION_BOT_ENABLED_SELECTED -> adminBlocks.onActionBotEnabledSelected(request, ctx)
+            AdminBlocks.ACTION_SCRIPT_ENABLED_SELECTED -> adminBlocks.onActionScriptEnabledSelected(request, ctx)
         }
 
         ctx.updateHomeView(
-            request.payload.user.id,
+            UserId(request.payload.user.id),
             request.payload.view.hash
         )
     }
 
     private fun Context.updateHomeView(
-        userId: String,
+        userId: UserId,
         viewHash: String
     ) {
         val user = getUser(userId)
 
         client().viewsPublish { requestBuilder ->
             requestBuilder
-                .userId(userId)
+                .userId(userId.id)
                 .hash(viewHash) // to protect against possible race conditions
                 .view(
                     view { view ->
@@ -95,7 +99,7 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
         }
     }
 
-    private fun createHomeBlocks(
+    private fun Context.createHomeBlocks(
         user: User?
     ): List<LayoutBlock> {
         val now: ZonedDateTime = ZonedDateTime.now()
@@ -121,12 +125,14 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
                 add(divider())
             }
 
-            addAll(footerBlocks.createBlocks(now))
+            addAll(footerBlocks.createBlocks(now, this@createHomeBlocks))
         }
     }
 
     companion object {
 
         private const val KEY_HOME = "home"
+
+        val ID = ScriptId("HOME")
     }
 }

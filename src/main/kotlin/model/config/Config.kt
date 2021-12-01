@@ -1,6 +1,7 @@
-package model
+package model.config
 
 import exception.MandatoryEnvironmentVariableMissingException
+import model.user.UserId
 
 data class Config(
     val debugMode: Boolean,
@@ -21,7 +22,7 @@ data class Config(
     )
 
     data class Admin(
-        val ids: List<MemberId>
+        val ids: List<UserId>
     )
 
     companion object {
@@ -43,7 +44,7 @@ data class Config(
                 System.getenv("SLACK_BOT_ADMIN_IDS")
                     ?.split(ADMIN_IDS_SEPARATOR)
                     ?.filter { it.isNotBlank() }
-                    ?.map { MemberId(it) }
+                    ?.map { UserId(it) }
                     ?: emptyList()
             )
         )

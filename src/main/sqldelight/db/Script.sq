@@ -1,0 +1,23 @@
+selectAll:
+SELECT *
+FROM script;
+
+selectById:
+SELECT *
+FROM script
+WHERE id IN ?;
+
+selectEnabled:
+SELECT enabled
+FROM script
+WHERE id = ?;
+
+insert:
+INSERT IGNORE INTO script(id)
+VALUES (?);
+
+updateEnabled:
+UPDATE script
+SET enabled = ?
+WHERE id = ?;
+

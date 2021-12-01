@@ -1,7 +1,7 @@
 package adapter
 
 import com.squareup.sqldelight.ColumnAdapter
-import model.UserId
+import model.user.UserId
 
 class UserIdColumnAdapter : ColumnAdapter<UserId, String> {
 
