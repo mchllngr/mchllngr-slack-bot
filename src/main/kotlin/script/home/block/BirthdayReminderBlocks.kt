@@ -7,6 +7,7 @@ import com.slack.api.model.block.composition.BlockCompositions.option
 import com.slack.api.model.block.composition.BlockCompositions.plainText
 import com.slack.api.model.block.element.BlockElements.button
 import com.slack.api.model.block.element.BlockElements.checkboxes
+import model.blockaction.BlockActionId
 import util.slack.block.headerSection
 import util.slack.block.plainTextSection
 
@@ -17,7 +18,7 @@ class BirthdayReminderBlocks {
         actions(
             listOf(
                 checkboxes {
-                    it.actionId(ACTION_BIRTHDAY_REMINDER_ENABLED_CHANGED)
+                    it.actionId(BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ENABLED_CHANGED.id)
                     it.options(
                         listOf(
                             option { option ->
@@ -34,7 +35,7 @@ class BirthdayReminderBlocks {
                 .text(plainText("Möchtest du an weitere Geburtstage außerhalb deines Teams erinnert werden?"))
                 .accessory(
                     button {
-                        it.actionId(ACTION_BIRTHDAY_REMINDER_ADD_ADDITIONAL_SELECTED)
+                        it.actionId(BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ADD_ADDITIONAL_SELECTED.id)
                         it.value("TODO_value")
                         it.text(plainText(":alarm_clock: Erinnerung hinzufügen", true))
                     }
@@ -57,7 +58,7 @@ class BirthdayReminderBlocks {
 
     companion object {
 
-        const val ACTION_BIRTHDAY_REMINDER_ENABLED_CHANGED = "ACTION_BIRTHDAY_REMINDER_ENABLED_CHANGED"
-        const val ACTION_BIRTHDAY_REMINDER_ADD_ADDITIONAL_SELECTED = "ACTION_BIRTHDAY_REMINDER_ADD_ADDITIONAL_SELECTED"
+        val BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ENABLED_CHANGED = BlockActionId.User.Str("ACTION_BIRTHDAY_REMINDER_ENABLED_CHANGED")
+        val BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ADD_ADDITIONAL_SELECTED = BlockActionId.User.Str("ACTION_BIRTHDAY_REMINDER_ADD_ADDITIONAL_SELECTED")
     }
 }

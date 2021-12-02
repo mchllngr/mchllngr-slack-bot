@@ -10,6 +10,7 @@ import com.slack.api.model.block.composition.BlockCompositions.confirmationDialo
 import com.slack.api.model.block.composition.BlockCompositions.markdownText
 import com.slack.api.model.block.composition.BlockCompositions.plainText
 import com.slack.api.model.block.element.BlockElements.button
+import model.blockaction.BlockActionId
 import model.script.ScriptId
 import script.base.ScriptHandler
 import service.admin.AdminService
@@ -40,7 +41,7 @@ class AdminBlocks(
                     .text(markdownText("Bot ist *${if (isBotEnabled) "eingeschaltet :large_green_circle:" else "ausgeschaltet :red_circle:"}*"))
                     .accessory(
                         button {
-                            it.actionId(ACTION_BOT_ENABLED_SELECTED)
+                            it.actionId(BLOCK_ACTION_ID_BOT_ENABLED_SELECTED.id)
                             it.value(isBotEnabled.not().toString())
                             it.text(plainText(if (!isBotEnabled) ":large_green_circle: Einschalten" else ":red_circle: Ausschalten", true))
                             it.confirm(
@@ -57,8 +58,7 @@ class AdminBlocks(
 
             val scriptElements = adminService.getScriptsById(scriptHandler.getScriptIds()).map { script ->
                 button {
-                    // FIXME actionId must be unique
-                    it.actionId(ACTION_SCRIPT_ENABLED_SELECTED)
+                    it.actionId(BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED_PREFIX + script.id.id)
                     it.value(script.id.id + ACTION_SCRIPT_ENABLED_KEY_VALUE_SEPARATOR + script.enabled.not().toString())
                     it.text(plainText("${if (script.enabled) ":large_green_circle:" else ":red_circle:"} ${script.id.id}", true))
                     it.confirm(
@@ -103,10 +103,10 @@ class AdminBlocks(
         if (scriptEnabledAction != null) adminService.setScriptEnabled(user, scriptEnabledAction.id, scriptEnabledAction.enabled)
     }
 
-    private fun BlockActionRequest.getSelectedBotEnabledValue() = payload?.actions?.find { it?.actionId == ACTION_BOT_ENABLED_SELECTED }?.value?.toBoolean()
+    private fun BlockActionRequest.getSelectedBotEnabledValue() = payload?.actions?.find { it?.actionId == BLOCK_ACTION_ID_BOT_ENABLED_SELECTED.id }?.value?.toBoolean()
 
     private fun BlockActionRequest.getSelectedScriptEnabledAction(): ScriptEnabledAction? {
-        val value = payload?.actions?.find { it?.actionId == ACTION_SCRIPT_ENABLED_SELECTED }?.value ?: return null
+        val value = payload?.actions?.find { it?.actionId?.startsWith(BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED_PREFIX) ?: false }?.value ?: return null
         val scriptIdToEnabled = REGEX_ACTION_SCRIPT_ENABLED_KEY_VALUE.split(value)
 
         val scriptId = scriptIdToEnabled.firstOrNull()?.let { ScriptId(it) }
@@ -125,7 +125,8 @@ class AdminBlocks(
         private const val ACTION_SCRIPT_ENABLED_KEY_VALUE_SEPARATOR = "="
         private val REGEX_ACTION_SCRIPT_ENABLED_KEY_VALUE by lazy { ACTION_SCRIPT_ENABLED_KEY_VALUE_SEPARATOR.toRegex() }
 
-        const val ACTION_BOT_ENABLED_SELECTED = "BOT_ENABLED_SELECTED"
-        const val ACTION_SCRIPT_ENABLED_SELECTED = "SCRIPT_ENABLED_SELECTED"
+        val BLOCK_ACTION_ID_BOT_ENABLED_SELECTED = BlockActionId.Admin.Str("BOT_ENABLED_SELECTED")
+        private const val BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED_PREFIX = "SCRIPT_ENABLED_SELECTED_"
+        val BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED = BlockActionId.Admin.Regex("^$BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED_PREFIX.+$".toRegex())
     }
 }

@@ -10,6 +10,7 @@ import com.slack.api.model.block.Blocks.divider
 import com.slack.api.model.block.LayoutBlock
 import com.slack.api.model.event.AppHomeOpenedEvent
 import com.slack.api.model.view.Views.view
+import model.blockaction.BlockActionId
 import model.script.ScriptId
 import model.user.UserId
 import script.base.AppHomeOpenedScript
@@ -40,15 +41,15 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
     override val id = ID
 
     override val blockActionIds = listOf(
-        BirthdayBlocks.ACTION_USER_BIRTHDAY_CHANGED,
-        BirthdayBlocks.ACTION_USER_BIRTHDAY_INCLUDE_YEAR_CHANGED,
-        BirthdayBlocks.ACTION_USER_BIRTHDAY_REMOVED,
-        BirthdayReminderBlocks.ACTION_BIRTHDAY_REMINDER_ENABLED_CHANGED,
-        BirthdayReminderBlocks.ACTION_BIRTHDAY_REMINDER_ADD_ADDITIONAL_SELECTED,
-        UserDataBlocks.ACTION_USER_DATA_SHOW_SELECTED,
-        UserDataBlocks.ACTION_USER_DATA_REMOVE_ALL_SELECTED,
-        AdminBlocks.ACTION_BOT_ENABLED_SELECTED,
-        AdminBlocks.ACTION_SCRIPT_ENABLED_SELECTED
+        BirthdayBlocks.BLOCK_ACTION_ID_USER_BIRTHDAY_CHANGED,
+        BirthdayBlocks.BLOCK_ACTION_ID_USER_BIRTHDAY_INCLUDE_YEAR_CHANGED,
+        BirthdayBlocks.BLOCK_ACTION_ID_USER_BIRTHDAY_REMOVED,
+        BirthdayReminderBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ENABLED_CHANGED,
+        BirthdayReminderBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ADD_ADDITIONAL_SELECTED,
+        UserDataBlocks.BLOCK_ACTION_ID_USER_DATA_SHOW_SELECTED,
+        UserDataBlocks.BLOCK_ACTION_ID_USER_DATA_REMOVE_ALL_SELECTED,
+        AdminBlocks.BLOCK_ACTION_ID_BOT_ENABLED_SELECTED,
+        AdminBlocks.BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED
     )
 
     override fun onAppHomeOpenedEvent(
@@ -64,13 +65,13 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
     }
 
     override fun onBlockActionEvent(
-        blockActionId: String,
+        blockActionId: BlockActionId,
         request: BlockActionRequest,
         ctx: ActionContext
     ) {
         when (blockActionId) {
-            AdminBlocks.ACTION_BOT_ENABLED_SELECTED -> adminBlocks.onActionBotEnabledSelected(request, ctx)
-            AdminBlocks.ACTION_SCRIPT_ENABLED_SELECTED -> adminBlocks.onActionScriptEnabledSelected(request, ctx)
+            AdminBlocks.BLOCK_ACTION_ID_BOT_ENABLED_SELECTED -> adminBlocks.onActionBotEnabledSelected(request, ctx)
+            AdminBlocks.BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED -> adminBlocks.onActionScriptEnabledSelected(request, ctx)
         }
 
         ctx.updateHomeView(

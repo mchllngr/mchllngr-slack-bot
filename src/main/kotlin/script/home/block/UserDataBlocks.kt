@@ -6,6 +6,7 @@ import com.slack.api.model.block.LayoutBlock
 import com.slack.api.model.block.composition.BlockCompositions.confirmationDialog
 import com.slack.api.model.block.composition.BlockCompositions.plainText
 import com.slack.api.model.block.element.BlockElements.button
+import model.blockaction.BlockActionId
 import util.slack.block.headerSection
 
 class UserDataBlocks {
@@ -17,7 +18,7 @@ class UserDataBlocks {
                 .text(plainText("Alle von diesem Bot gespeicherten Daten über mich anzeigen"))
                 .accessory(
                     button {
-                        it.actionId(ACTION_USER_DATA_SHOW_SELECTED)
+                        it.actionId(BLOCK_ACTION_ID_USER_DATA_SHOW_SELECTED.id)
                         it.value("TODO_value")
                         it.text(plainText(":mag: Anzeigen", true))
                     }
@@ -26,7 +27,7 @@ class UserDataBlocks {
         actions(
             listOf(
                 button {
-                    it.actionId(ACTION_USER_DATA_REMOVE_ALL_SELECTED)
+                    it.actionId(BLOCK_ACTION_ID_USER_DATA_REMOVE_ALL_SELECTED.id)
                     it.value("TODO_value")
                     it.text(plainText(":warning: Nutzerdaten löschen", true))
                     it.confirm(
@@ -44,7 +45,7 @@ class UserDataBlocks {
 
     companion object {
 
-        const val ACTION_USER_DATA_SHOW_SELECTED = "ACTION_USER_DATA_SHOW_SELECTED"
-        const val ACTION_USER_DATA_REMOVE_ALL_SELECTED = "ACTION_USER_DATA_REMOVE_ALL_SELECTED"
+        val BLOCK_ACTION_ID_USER_DATA_SHOW_SELECTED = BlockActionId.User.Str("ACTION_USER_DATA_SHOW_SELECTED")
+        val BLOCK_ACTION_ID_USER_DATA_REMOVE_ALL_SELECTED = BlockActionId.User.Str("ACTION_USER_DATA_REMOVE_ALL_SELECTED")
     }
 }

@@ -10,6 +10,7 @@ import com.slack.api.model.block.composition.BlockCompositions.plainText
 import com.slack.api.model.block.element.BlockElements.button
 import com.slack.api.model.block.element.BlockElements.checkboxes
 import com.slack.api.model.block.element.BlockElements.datePicker
+import model.blockaction.BlockActionId
 import util.slack.block.headerSection
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -28,7 +29,7 @@ class BirthdayBlocks {
                     .text(plainText("Dein Geburtstag"))
                     .accessory(
                         datePicker {
-                            it.actionId(ACTION_USER_BIRTHDAY_CHANGED)
+                            it.actionId(BLOCK_ACTION_ID_USER_BIRTHDAY_CHANGED.id)
                             it.initialDate(birthday.format(datePickerFormat))
                             it.placeholder(plainText("Geburtstag wählen"))
                         }
@@ -37,7 +38,7 @@ class BirthdayBlocks {
             actions(
                 listOf(
                     checkboxes {
-                        it.actionId(ACTION_USER_BIRTHDAY_INCLUDE_YEAR_CHANGED)
+                        it.actionId(BLOCK_ACTION_ID_USER_BIRTHDAY_INCLUDE_YEAR_CHANGED.id)
                         it.options(
                             listOf(
                                 option { option ->
@@ -55,7 +56,7 @@ class BirthdayBlocks {
                     .text(plainText("Geburtsdatum entfernen"))
                     .accessory(
                         button {
-                            it.actionId(ACTION_USER_BIRTHDAY_REMOVED)
+                            it.actionId(BLOCK_ACTION_ID_USER_BIRTHDAY_REMOVED.id)
                             it.value("TODO_value")
                             it.text(plainText(":warning: Entfernen", true))
                             it.confirm(
@@ -74,8 +75,8 @@ class BirthdayBlocks {
 
     companion object {
 
-        const val ACTION_USER_BIRTHDAY_CHANGED = "ACTION_USER_BIRTHDAY_CHANGED"
-        const val ACTION_USER_BIRTHDAY_INCLUDE_YEAR_CHANGED = "ACTION_USER_BIRTHDAY_INCLUDE_YEAR_CHANGED"
-        const val ACTION_USER_BIRTHDAY_REMOVED = "ACTION_USER_BIRTHDAY_REMOVED"
+        val BLOCK_ACTION_ID_USER_BIRTHDAY_CHANGED = BlockActionId.User.Str("ACTION_USER_BIRTHDAY_CHANGED")
+        val BLOCK_ACTION_ID_USER_BIRTHDAY_INCLUDE_YEAR_CHANGED = BlockActionId.User.Str("ACTION_USER_BIRTHDAY_INCLUDE_YEAR_CHANGED")
+        val BLOCK_ACTION_ID_USER_BIRTHDAY_REMOVED = BlockActionId.User.Str("ACTION_USER_BIRTHDAY_REMOVED")
     }
 }
