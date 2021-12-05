@@ -12,7 +12,7 @@ FROM user
 INNER JOIN teamUser
   ON user.id = teamUser.userId
   AND teamUser.teamId = ?
-ORDER BY teamUser.admin DESC;
+ORDER BY teamUser.admin DESC, user.id ASC;
 
 insert:
 INSERT INTO team(name)
