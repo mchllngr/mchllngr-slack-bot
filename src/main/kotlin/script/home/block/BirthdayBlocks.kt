@@ -3,11 +3,9 @@ package script.home.block
 import com.slack.api.model.block.Blocks.actions
 import com.slack.api.model.block.Blocks.section
 import com.slack.api.model.block.LayoutBlock
-import com.slack.api.model.block.composition.BlockCompositions.confirmationDialog
 import com.slack.api.model.block.composition.BlockCompositions.markdownText
 import com.slack.api.model.block.composition.BlockCompositions.option
 import com.slack.api.model.block.composition.BlockCompositions.plainText
-import com.slack.api.model.block.element.BlockElements.button
 import com.slack.api.model.block.element.BlockElements.checkboxes
 import com.slack.api.model.block.element.BlockElements.datePicker
 import model.blockaction.BlockActionId
@@ -51,25 +49,26 @@ class BirthdayBlocks {
                     }
                 )
             ),
-            section { section ->
-                section
-                    .text(plainText("Geburtsdatum entfernen"))
-                    .accessory(
-                        button {
-                            it.actionId(BLOCK_ACTION_ID_USER_BIRTHDAY_REMOVED.id)
-                            it.value("TODO_value")
-                            it.text(plainText(":warning: Entfernen", true))
-                            it.confirm(
-                                confirmationDialog { dialog ->
-                                    dialog.title(plainText("Geburtsdatum entfernen"))
-                                    dialog.text(plainText("Bist du sicher?"))
-                                    dialog.confirm(plainText("Entfernen"))
-                                    dialog.deny(plainText("Abbrechen"))
-                                }
-                            )
-                        }
-                    )
-            }
+            // #11 Allow user to remove own birthday
+//            section { section ->
+//                section
+//                    .text(plainText("Geburtsdatum entfernen"))
+//                    .accessory(
+//                        button {
+//                            it.actionId(BLOCK_ACTION_ID_USER_BIRTHDAY_REMOVED.id)
+//                            it.value("TODO_value")
+//                            it.text(plainText(":warning: Entfernen", true))
+//                            it.confirm(
+//                                confirmationDialog { dialog ->
+//                                    dialog.title(plainText("Geburtsdatum entfernen"))
+//                                    dialog.text(plainText("Bist du sicher?"))
+//                                    dialog.confirm(plainText("Entfernen"))
+//                                    dialog.deny(plainText("Abbrechen"))
+//                                }
+//                            )
+//                        }
+//                    )
+//            }
         )
     }
 

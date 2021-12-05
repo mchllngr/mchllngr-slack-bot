@@ -49,15 +49,14 @@ class ScriptHandler(
         val appHomeOpenedScripts = scripts.values.filterIsInstance<AppHomeOpenedScript>()
 
         event(AppHomeOpenedEvent::class.java) { event, ctx ->
-            // TODO find some other way to always show admins the home-tab in a more general concept
-            //      -> some kind of "admin only" script?
+            // #13 find some other way to always show admins the home-tab in a more general concept
 
             val userIsBotAdmin = ctx.getUser(UserId(event.event.user)).isBotAdmin
 
             if (!userIsBotAdmin && !adminService.isBotEnabled()) return@event ctx.ack()
 
             appHomeOpenedScripts
-                .filter { it.id == HomeScript.ID && userIsBotAdmin || adminService.isScriptEnabled(it.id) } // TODO improve performance: check enabled-state with a list of ids so that only one db-request is needed ("get all enabled=true from db")
+                .filter { it.id == HomeScript.ID && userIsBotAdmin || adminService.isScriptEnabled(it.id) } // #14 improve performance when checking if scripts are enabled
                 .forEach { it.onAppHomeOpenedEvent(event, ctx) }
 
             ctx.ack()
@@ -71,7 +70,7 @@ class ScriptHandler(
             if (!adminService.isBotEnabled()) return@event ctx.ack()
 
             messageScripts
-                .filter { adminService.isScriptEnabled(it.id) } // TODO improve performance: check enabled-state with a list of ids so that only one db-request is needed ("get all enabled=true from db")
+                .filter { adminService.isScriptEnabled(it.id) } // #14 improve performance when checking if scripts are enabled
                 .forEach { it.onMessageEvent(event, ctx) }
 
             ctx.ack()
@@ -111,7 +110,7 @@ class ScriptHandler(
             if (!adminService.isBotEnabled()) return@BlockActionHandler ctx.ack()
 
             scripts
-                .filter { adminService.isScriptEnabled(it.id) } // TODO improve performance: check enabled-state with a list of ids so that only one db-request is needed ("get all enabled=true from db")
+                .filter { adminService.isScriptEnabled(it.id) } // #14 improve performance when checking if scripts are enabled
                 .forEach { it.onBlockActionEvent(blockActionId, request, ctx) }
 
             ctx.ack()

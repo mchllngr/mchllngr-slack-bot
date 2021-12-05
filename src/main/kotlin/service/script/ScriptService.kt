@@ -4,7 +4,7 @@ import datastore.DataStore
 import db.Script
 import model.script.ScriptId
 
-// TODO decide how this service should be available to the outside: by itself or only via AdminService?
+// #15 decide how this service should be available to the outside
 interface ScriptService {
 
     fun getById(ids: Collection<ScriptId>): List<Script>

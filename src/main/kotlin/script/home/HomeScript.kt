@@ -118,8 +118,9 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
             addAll(birthdayReminderBlocks.createBlocks())
             add(divider())
 
-            addAll(userDataBlocks.createBlocks())
-            add(divider())
+            // #9 Build home/userData
+//            addAll(userDataBlocks.createBlocks())
+//            add(divider())
 
             adminBlocks.createBlocks(user)?.let { blocks ->
                 addAll(blocks)
