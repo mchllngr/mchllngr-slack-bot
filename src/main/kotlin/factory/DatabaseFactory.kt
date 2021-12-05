@@ -3,6 +3,7 @@ package factory
 import adapter.LocalDateColumnAdapter
 import adapter.ScriptIdColumnAdapter
 import adapter.TeamIdColumnAdapter
+import adapter.TeamUserIdColumnAdapter
 import adapter.UserIdColumnAdapter
 import com.squareup.sqldelight.db.SqlDriver
 import db.Database
@@ -26,6 +27,7 @@ object DatabaseFactory {
             idAdapter = TeamIdColumnAdapter(),
         ),
         teamUserAdapter = TeamUser.Adapter(
+            idAdapter = TeamUserIdColumnAdapter(),
             teamIdAdapter = TeamIdColumnAdapter(),
             userIdAdapter = UserIdColumnAdapter(),
         )

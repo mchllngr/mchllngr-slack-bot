@@ -1,6 +1,7 @@
 import java.time.LocalDate;
 import model.script.ScriptId;
 import model.team.TeamId;
+import model.team.TeamUserId;
 import model.user.UserId;
 
 -- drop tables
@@ -31,14 +32,16 @@ CREATE INDEX script_id ON script(id);
 -- user
 CREATE TABLE user(
     id VARCHAR(256) AS UserId NOT NULL PRIMARY KEY,
-    birthdate VARCHAR(256) AS LocalDate NOT NULL
+    birthdate VARCHAR(256) AS LocalDate DEFAULT NULL,
+    includeBirthdateYear BOOLEAN NOT NULL DEFAULT TRUE,
+    enableBirthdateReminders BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE INDEX user_id ON user(id);
 
 -- team
 CREATE TABLE team(
-    id VARCHAR(256) AS TeamId NOT NULL PRIMARY KEY,
+    id INTEGER AS TeamId NOT NULL PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(256) NOT NULL
 );
 
@@ -46,8 +49,8 @@ CREATE INDEX team_id ON team(id);
 
 -- teamUser
 CREATE TABLE teamUser(
-    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    teamId VARCHAR(256) AS TeamId NOT NULL,
+    id INTEGER AS TeamUserId NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    teamId INTEGER AS TeamId NOT NULL,
     userId VARCHAR(256) AS UserId NOT NULL,
     admin BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT fk_teamuser_team_id FOREIGN KEY (teamId) REFERENCES team(id) ON DELETE CASCADE ON UPDATE CASCADE,

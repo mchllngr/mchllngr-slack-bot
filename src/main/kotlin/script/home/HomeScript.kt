@@ -24,6 +24,7 @@ import script.home.block.TeamBlocks
 import script.home.block.UserDataBlocks
 import servicelocator.ServiceLocator.adminService
 import servicelocator.ServiceLocator.scriptHandler
+import servicelocator.ServiceLocator.teamService
 import util.slack.context.getUser
 import java.time.ZonedDateTime
 
@@ -31,7 +32,7 @@ import java.time.ZonedDateTime
 class HomeScript : AppHomeOpenedScript, BlockActionScript {
 
     private val helloBlocks by lazy { HelloBlocks() }
-    private val teamBlocks by lazy { TeamBlocks() }
+    private val teamBlocks by lazy { TeamBlocks(teamService) }
     private val birthdayBlocks by lazy { BirthdayBlocks() }
     private val birthdayReminderBlocks by lazy { BirthdayReminderBlocks() }
     private val userDataBlocks by lazy { UserDataBlocks() }
@@ -109,7 +110,7 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
             addAll(helloBlocks.createBlocks(user))
             add(divider())
 
-            addAll(teamBlocks.createBlocks())
+            addAll(teamBlocks.createBlocks(user))
             add(divider())
 
             addAll(birthdayBlocks.createBlocks())

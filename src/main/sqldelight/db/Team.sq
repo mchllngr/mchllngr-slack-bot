@@ -1,13 +1,19 @@
-selectAll:
-SELECT *
-FROM team;
+selectTeamsForUser:
+SELECT team.*
+FROM team
+INNER JOIN teamUser
+  ON team.id = teamUser.teamId
+  AND teamUser.userId = ?
+ORDER BY team.name ASC;
 
--- selectTeamsForUser:
+selectUsersForTeam:
+SELECT user.*, teamUser.admin
+FROM user
+INNER JOIN teamUser
+  ON user.id = teamUser.userId
+  AND teamUser.teamId = ?
+ORDER BY teamUser.admin DESC;
 
 insert:
-INSERT INTO team(id, name)
-VALUES (?, ?);
-
-delete:
-DELETE FROM team
-WHERE id = ?;
+INSERT INTO team(name)
+VALUES (?);
