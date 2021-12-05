@@ -3,20 +3,15 @@ import model.script.ScriptId;
 import model.team.TeamId;
 import model.user.UserId;
 
--- database_version
+-- drop tables
 DROP TABLE IF EXISTS database_version;
-
-CREATE TABLE database_version(
-    id INTEGER NOT NULL PRIMARY KEY,
-    version INTEGER NOT NULL
-);
-
-INSERT INTO database_version(id, version)
-VALUES (0, 1);
-
--- admin
+DROP TABLE IF EXISTS team_user;
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS team;
+DROP TABLE IF EXISTS script;
 DROP TABLE IF EXISTS admin;
 
+-- admin
 CREATE TABLE admin(
     id INTEGER NOT NULL PRIMARY KEY,
     bot_enabled BOOLEAN NOT NULL
@@ -26,18 +21,14 @@ INSERT INTO admin(id, bot_enabled)
 VALUES (0, TRUE);
 
 -- script
-DROP TABLE IF EXISTS script;
-
 CREATE TABLE script(
     id VARCHAR(256) AS ScriptId NOT NULL PRIMARY KEY,
-    enabled BOOLEAN NOT NULL DEFAULT 1
+    enabled BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE INDEX script_id ON script(id);
 
 -- user
-DROP TABLE IF EXISTS user;
-
 CREATE TABLE user(
     id VARCHAR(256) AS UserId NOT NULL PRIMARY KEY,
     birthdate VARCHAR(256) AS LocalDate NOT NULL
@@ -46,8 +37,6 @@ CREATE TABLE user(
 CREATE INDEX user_id ON user(id);
 
 -- team
-DROP TABLE IF EXISTS team;
-
 CREATE TABLE team(
     id VARCHAR(256) AS TeamId NOT NULL PRIMARY KEY,
     name VARCHAR(256) NOT NULL
@@ -55,22 +44,21 @@ CREATE TABLE team(
 
 CREATE INDEX team_id ON team(id);
 
--- team_admin
-DROP TABLE IF EXISTS team_admin;
-
-CREATE TABLE team_admin(
-    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    teamId VARCHAR(256) AS TeamId NOT NULL,
-    userId VARCHAR(256) AS UserId NOT NULL,
-    FOREIGN KEY (teamId) REFERENCES team(id)
-);
-
 -- team_user
-DROP TABLE IF EXISTS team_user;
-
 CREATE TABLE team_user(
     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     teamId VARCHAR(256) AS TeamId NOT NULL,
     userId VARCHAR(256) AS UserId NOT NULL,
-    FOREIGN KEY (teamId) REFERENCES team(id)
+    admin BOOLEAN NOT NULL DEFAULT FALSE,
+    CONSTRAINT fk_teamuser_team_id FOREIGN KEY (teamId) REFERENCES team(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_teamuser_user_id FOREIGN KEY (userId) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+-- database_version
+CREATE TABLE database_version(
+    id INTEGER NOT NULL PRIMARY KEY,
+    version INTEGER NOT NULL
+);
+
+INSERT INTO database_version(id, version)
+VALUES (0, 1);
