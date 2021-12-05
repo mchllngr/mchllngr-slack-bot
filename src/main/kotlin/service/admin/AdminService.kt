@@ -44,7 +44,7 @@ class AdminServiceImpl(
 
     private val queries = dataStore.adminQueries
 
-    override fun isBotEnabled() = runCatching { queries.selectAdmin().executeAsOneOrNull()?.bot_enabled }.getOrNull() ?: true
+    override fun isBotEnabled() = runCatching { queries.selectAdmin().executeAsOneOrNull()?.botEnabled }.getOrNull() ?: true
 
     override fun setBotEnabled(
         user: User?,

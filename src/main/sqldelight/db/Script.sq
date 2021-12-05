@@ -1,7 +1,3 @@
-selectAll:
-SELECT *
-FROM script;
-
 selectById:
 SELECT *
 FROM script

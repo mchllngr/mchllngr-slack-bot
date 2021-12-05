@@ -4,8 +4,8 @@ import model.team.TeamId;
 import model.user.UserId;
 
 -- drop tables
-DROP TABLE IF EXISTS database_version;
-DROP TABLE IF EXISTS team_user;
+DROP TABLE IF EXISTS databaseVersion;
+DROP TABLE IF EXISTS teamUser;
 DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS team;
 DROP TABLE IF EXISTS script;
@@ -14,10 +14,10 @@ DROP TABLE IF EXISTS admin;
 -- admin
 CREATE TABLE admin(
     id INTEGER NOT NULL PRIMARY KEY,
-    bot_enabled BOOLEAN NOT NULL
+    botEnabled BOOLEAN NOT NULL
 );
 
-INSERT INTO admin(id, bot_enabled)
+INSERT INTO admin(id, botEnabled)
 VALUES (0, TRUE);
 
 -- script
@@ -44,8 +44,8 @@ CREATE TABLE team(
 
 CREATE INDEX team_id ON team(id);
 
--- team_user
-CREATE TABLE team_user(
+-- teamUser
+CREATE TABLE teamUser(
     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     teamId VARCHAR(256) AS TeamId NOT NULL,
     userId VARCHAR(256) AS UserId NOT NULL,
@@ -55,10 +55,10 @@ CREATE TABLE team_user(
 );
 
 -- database_version
-CREATE TABLE database_version(
+CREATE TABLE databaseVersion(
     id INTEGER NOT NULL PRIMARY KEY,
     version INTEGER NOT NULL
 );
 
-INSERT INTO database_version(id, version)
+INSERT INTO databaseVersion(id, version)
 VALUES (0, 1);

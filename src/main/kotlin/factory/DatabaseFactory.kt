@@ -8,7 +8,7 @@ import com.squareup.sqldelight.db.SqlDriver
 import db.Database
 import db.Script
 import db.Team
-import db.Team_user
+import db.TeamUser
 import db.User
 
 object DatabaseFactory {
@@ -25,7 +25,7 @@ object DatabaseFactory {
         teamAdapter = Team.Adapter(
             idAdapter = TeamIdColumnAdapter(),
         ),
-        team_userAdapter = Team_user.Adapter(
+        teamUserAdapter = TeamUser.Adapter(
             teamIdAdapter = TeamIdColumnAdapter(),
             userIdAdapter = UserIdColumnAdapter(),
         )

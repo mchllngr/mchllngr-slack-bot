@@ -5,5 +5,5 @@ WHERE id = 0;
 
 updateBotEnabled:
 UPDATE admin
-SET bot_enabled = ?
+SET botEnabled = ?
 WHERE id = 0;
