@@ -1,11 +1,11 @@
-package service.script
+package repository.script
 
 import datastore.DataStore
 import db.Script
 import model.script.ScriptId
 
-// #15 decide how this service should be available to the outside
-interface ScriptService {
+// #15 decide how this repository should be available to the outside
+interface ScriptRepository {
 
     fun getById(ids: Collection<ScriptId>): List<Script>
 
@@ -20,11 +20,11 @@ interface ScriptService {
 
     companion object {
 
-        fun create(dataStore: DataStore): ScriptService = ScriptServiceImpl(dataStore)
+        fun create(dataStore: DataStore): ScriptRepository = ScriptRepositoryImpl(dataStore)
     }
 }
 
-class ScriptServiceImpl(dataStore: DataStore) : ScriptService {
+class ScriptRepositoryImpl(dataStore: DataStore) : ScriptRepository {
 
     private val queries = dataStore.scriptQueries
 

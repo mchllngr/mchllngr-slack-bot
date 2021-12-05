@@ -1,4 +1,4 @@
-package service.team
+package repository.team
 
 import datastore.DataStore
 import db.SelectUsersForTeam
@@ -6,7 +6,7 @@ import db.Team
 import model.team.TeamId
 import model.user.UserId
 
-interface TeamService {
+interface TeamRepository {
 
     fun getTeamsForUser(userId: UserId): List<Team>
 
@@ -14,11 +14,11 @@ interface TeamService {
 
     companion object {
 
-        fun create(dataStore: DataStore): TeamService = TeamServiceImpl(dataStore)
+        fun create(dataStore: DataStore): TeamRepository = TeamRepositoryImpl(dataStore)
     }
 }
 
-class TeamServiceImpl(dataStore: DataStore) : TeamService {
+class TeamRepositoryImpl(dataStore: DataStore) : TeamRepository {
 
     private val queries = dataStore.teamQueries
 

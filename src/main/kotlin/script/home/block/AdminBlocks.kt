@@ -12,8 +12,8 @@ import com.slack.api.model.block.composition.BlockCompositions.plainText
 import com.slack.api.model.block.element.BlockElements.button
 import model.blockaction.BlockActionId
 import model.script.ScriptId
+import repository.admin.AdminRepository
 import script.base.ScriptHandler
-import service.admin.AdminService
 import util.slack.block.headerSection
 import util.slack.block.markdownSection
 import util.slack.block.plainTextSection
@@ -21,7 +21,7 @@ import util.slack.context.getUser
 import util.slack.user.isBotAdmin
 
 class AdminBlocks(
-    private val adminService: AdminService,
+    private val adminRepo: AdminRepository,
     private val scriptHandler: ScriptHandler
 ) {
 
@@ -31,7 +31,7 @@ class AdminBlocks(
     ): List<LayoutBlock>? {
         if (!user.isBotAdmin) return null
 
-        val isBotEnabled = adminService.isBotEnabled()
+        val isBotEnabled = adminRepo.isBotEnabled()
 
         return buildList {
             this += headerSection(text = ":zap: Admin", emoji = true)
@@ -56,7 +56,7 @@ class AdminBlocks(
                     )
             }
 
-            val scriptElements = adminService.getScriptsById(scriptHandler.getScriptIds()).map { script ->
+            val scriptElements = adminRepo.getScriptsById(scriptHandler.getScriptIds()).map { script ->
                 button {
                     it.actionId(BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED_PREFIX + script.id.id)
                     it.value(script.id.id + ACTION_SCRIPT_ENABLED_KEY_VALUE_SEPARATOR + script.enabled.not().toString())
@@ -89,7 +89,7 @@ class AdminBlocks(
         if (!user.isBotAdmin) return
 
         val isBotEnabled = request.getSelectedBotEnabledValue()
-        if (isBotEnabled != null) adminService.setBotEnabled(user, isBotEnabled)
+        if (isBotEnabled != null) adminRepo.setBotEnabled(user, isBotEnabled)
     }
 
     fun onActionScriptEnabledSelected(
@@ -100,7 +100,7 @@ class AdminBlocks(
         if (!user.isBotAdmin) return
 
         val scriptEnabledAction = request.getSelectedScriptEnabledAction()
-        if (scriptEnabledAction != null) adminService.setScriptEnabled(user, scriptEnabledAction.id, scriptEnabledAction.enabled)
+        if (scriptEnabledAction != null) adminRepo.setScriptEnabled(user, scriptEnabledAction.id, scriptEnabledAction.enabled)
     }
 
     private fun BlockActionRequest.getSelectedBotEnabledValue() = payload?.actions?.find { it?.actionId == BLOCK_ACTION_ID_BOT_ENABLED_SELECTED.id }?.value?.toBoolean()

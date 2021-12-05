@@ -4,17 +4,17 @@ import datastore.DataStore
 import factory.DatabaseFactory
 import factory.SqlDriverFactory
 import model.config.Config
+import repository.admin.AdminRepository
+import repository.script.ScriptRepository
+import repository.team.TeamRepository
+import repository.user.UserRepository
 import script.base.ScriptHandler
-import service.admin.AdminService
-import service.script.ScriptService
-import service.team.TeamService
-import service.user.UserService
 
 object ServiceLocator {
 
     val config by lazy { Config.create() }
 
-    val scriptHandler by lazy { ScriptHandler.create(adminService) }
+    val scriptHandler by lazy { ScriptHandler.create(adminRepo) }
 
     private val databaseDriver by lazy { SqlDriverFactory.create() }
 
@@ -22,11 +22,11 @@ object ServiceLocator {
 
     val dataStore by lazy { DataStore.create(databaseDriver, database) }
 
-    val adminService by lazy { AdminService.create(dataStore, scriptService) }
+    val adminRepo by lazy { AdminRepository.create(dataStore, scriptRepo) }
 
-    private val scriptService by lazy { ScriptService.create(dataStore) }
+    private val scriptRepo by lazy { ScriptRepository.create(dataStore) }
 
-    val userService by lazy { UserService.create(dataStore) }
+    val userRepo by lazy { UserRepository.create(dataStore) }
 
-    val teamService by lazy { TeamService.create(dataStore) }
+    val teamRepo by lazy { TeamRepository.create(dataStore) }
 }

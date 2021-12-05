@@ -6,14 +6,14 @@ import com.slack.api.model.block.LayoutBlock
 import com.slack.api.model.block.composition.BlockCompositions.markdownText
 import db.Team
 import model.user.UserId
-import service.team.TeamService
+import repository.team.TeamRepository
 import util.charsequence.joinToString
 import util.slack.block.headerSection
 import util.slack.block.markdownSection
 import util.slack.block.plainTextSection
 
 class TeamBlocks(
-    private val teamService: TeamService
+    private val teamRepo: TeamRepository
 ) {
 
     @OptIn(ExperimentalStdlibApi::class)
@@ -22,7 +22,7 @@ class TeamBlocks(
     ): List<LayoutBlock> = buildList {
         this += headerSection(text = ":busts_in_silhouette: Team", emoji = true)
 
-        val teamsForUser = user?.let { teamService.getTeamsForUser(UserId(it.id)) } ?: emptyList()
+        val teamsForUser = user?.let { teamRepo.getTeamsForUser(UserId(it.id)) } ?: emptyList()
         if (teamsForUser.isEmpty()) {
             this += plainTextSection("Du gehörst keinem Team an.")
             return@buildList
@@ -43,7 +43,7 @@ class TeamBlocks(
         teamsForUser.forEach { team ->
             this += markdownSection("Teammitglieder *${team.name}*:")
 
-            val usersInTeam = teamService.getUsersForTeam(team.id)
+            val usersInTeam = teamRepo.getUsersForTeam(team.id)
                 .map { user -> markdownText("<@${user.id.id}> ${if (user.admin) " *(Teamadmin)*" else ""}") }
             this += section { it.fields(usersInTeam) }
         }

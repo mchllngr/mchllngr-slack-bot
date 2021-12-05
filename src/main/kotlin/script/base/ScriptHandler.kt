@@ -7,13 +7,13 @@ import com.slack.api.model.event.MessageEvent
 import model.blockaction.BlockActionId
 import model.script.ScriptId
 import model.user.UserId
+import repository.admin.AdminRepository
 import script.home.HomeScript
-import service.admin.AdminService
 import util.slack.context.getUser
 import util.slack.user.isBotAdmin
 
 class ScriptHandler(
-    private val adminService: AdminService
+    private val adminRepo: AdminRepository
 ) {
 
     private val scripts = mutableMapOf<ScriptId, Script>()
@@ -39,7 +39,7 @@ class ScriptHandler(
         }
 
         scripts.values.forEach { script ->
-            adminService.insertScript(script.id)
+            adminRepo.insertScript(script.id)
         }
     }
 
@@ -53,10 +53,10 @@ class ScriptHandler(
 
             val userIsBotAdmin = ctx.getUser(UserId(event.event.user)).isBotAdmin
 
-            if (!userIsBotAdmin && !adminService.isBotEnabled()) return@event ctx.ack()
+            if (!userIsBotAdmin && !adminRepo.isBotEnabled()) return@event ctx.ack()
 
             appHomeOpenedScripts
-                .filter { it.id == HomeScript.ID && userIsBotAdmin || adminService.isScriptEnabled(it.id) } // #14 improve performance when checking if scripts are enabled
+                .filter { it.id == HomeScript.ID && userIsBotAdmin || adminRepo.isScriptEnabled(it.id) } // #14 improve performance when checking if scripts are enabled
                 .forEach { it.onAppHomeOpenedEvent(event, ctx) }
 
             ctx.ack()
@@ -67,10 +67,10 @@ class ScriptHandler(
         val messageScripts = scripts.values.filterIsInstance<MessageScript>()
 
         event(MessageEvent::class.java) { event, ctx ->
-            if (!adminService.isBotEnabled()) return@event ctx.ack()
+            if (!adminRepo.isBotEnabled()) return@event ctx.ack()
 
             messageScripts
-                .filter { adminService.isScriptEnabled(it.id) } // #14 improve performance when checking if scripts are enabled
+                .filter { adminRepo.isScriptEnabled(it.id) } // #14 improve performance when checking if scripts are enabled
                 .forEach { it.onMessageEvent(event, ctx) }
 
             ctx.ack()
@@ -107,10 +107,10 @@ class ScriptHandler(
         scripts: List<BlockActionScript>
     ) {
         val handler = BlockActionHandler { request, ctx ->
-            if (!adminService.isBotEnabled()) return@BlockActionHandler ctx.ack()
+            if (!adminRepo.isBotEnabled()) return@BlockActionHandler ctx.ack()
 
             scripts
-                .filter { adminService.isScriptEnabled(it.id) } // #14 improve performance when checking if scripts are enabled
+                .filter { adminRepo.isScriptEnabled(it.id) } // #14 improve performance when checking if scripts are enabled
                 .forEach { it.onBlockActionEvent(blockActionId, request, ctx) }
 
             ctx.ack()
@@ -142,6 +142,6 @@ class ScriptHandler(
 
     companion object {
 
-        fun create(adminService: AdminService) = ScriptHandler(adminService)
+        fun create(adminRepo: AdminRepository) = ScriptHandler(adminRepo)
     }
 }

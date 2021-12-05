@@ -22,9 +22,9 @@ import script.home.block.FooterBlocks
 import script.home.block.HelloBlocks
 import script.home.block.TeamBlocks
 import script.home.block.UserDataBlocks
-import servicelocator.ServiceLocator.adminService
+import servicelocator.ServiceLocator.adminRepo
 import servicelocator.ServiceLocator.scriptHandler
-import servicelocator.ServiceLocator.teamService
+import servicelocator.ServiceLocator.teamRepo
 import util.slack.context.getUser
 import java.time.ZonedDateTime
 
@@ -32,11 +32,11 @@ import java.time.ZonedDateTime
 class HomeScript : AppHomeOpenedScript, BlockActionScript {
 
     private val helloBlocks by lazy { HelloBlocks() }
-    private val teamBlocks by lazy { TeamBlocks(teamService) }
+    private val teamBlocks by lazy { TeamBlocks(teamRepo) }
     private val birthdayBlocks by lazy { BirthdayBlocks() }
     private val birthdayReminderBlocks by lazy { BirthdayReminderBlocks() }
     private val userDataBlocks by lazy { UserDataBlocks() }
-    private val adminBlocks by lazy { AdminBlocks(adminService, scriptHandler) }
+    private val adminBlocks by lazy { AdminBlocks(adminRepo, scriptHandler) }
     private val footerBlocks by lazy { FooterBlocks() }
 
     override val id = ID

@@ -1,13 +1,13 @@
-package service.admin
+package repository.admin
 
 import com.slack.api.model.User
 import datastore.DataStore
 import db.Script
 import model.script.ScriptId
-import service.script.ScriptService
+import repository.script.ScriptRepository
 import util.slack.user.isBotAdmin
 
-interface AdminService {
+interface AdminRepository {
 
     fun isBotEnabled(): Boolean
 
@@ -32,15 +32,15 @@ interface AdminService {
 
         fun create(
             dataStore: DataStore,
-            scriptService: ScriptService
-        ): AdminService = AdminServiceImpl(dataStore, scriptService)
+            scriptRepo: ScriptRepository
+        ): AdminRepository = AdminRepositoryImpl(dataStore, scriptRepo)
     }
 }
 
-class AdminServiceImpl(
+class AdminRepositoryImpl(
     dataStore: DataStore,
-    private val scriptService: ScriptService
-) : AdminService {
+    private val scriptRepo: ScriptRepository
+) : AdminRepository {
 
     private val queries = dataStore.adminQueries
 
@@ -55,13 +55,13 @@ class AdminServiceImpl(
         queries.updateBotEnabled(enabled)
     }
 
-    override fun getScriptsById(ids: Collection<ScriptId>) = scriptService.getById(ids)
+    override fun getScriptsById(ids: Collection<ScriptId>) = scriptRepo.getById(ids)
 
     override fun insertScript(id: ScriptId) {
-        scriptService.insert(id)
+        scriptRepo.insert(id)
     }
 
-    override fun isScriptEnabled(id: ScriptId) = scriptService.isEnabled(id)
+    override fun isScriptEnabled(id: ScriptId) = scriptRepo.isEnabled(id)
 
     override fun setScriptEnabled(
         user: User?,
@@ -70,6 +70,6 @@ class AdminServiceImpl(
     ) {
         if (!user.isBotAdmin) return
 
-        scriptService.setEnabled(id, enabled)
+        scriptRepo.setEnabled(id, enabled)
     }
 }
