@@ -1,12 +1,26 @@
-selectAll:
+select:
 SELECT *
-FROM user;
-
--- selectUsersInTeam:
+FROM user
+WHERE id = ?;
 
 insert:
-INSERT INTO user(id, birthdate)
-VALUES (?, ?);
+INSERT IGNORE INTO user(id)
+VALUES (?);
+
+updateBirthdate:
+UPDATE user
+SET birthdate = ?
+WHERE id = ?;
+
+updateIncludeBirthdateYear:
+UPDATE user
+SET includeBirthdateYear = ?
+WHERE id = ?;
+
+updateEnableBirthdateReminders:
+UPDATE user
+SET enableBirthdateReminders = ?
+WHERE id = ?;
 
 delete:
 DELETE FROM user

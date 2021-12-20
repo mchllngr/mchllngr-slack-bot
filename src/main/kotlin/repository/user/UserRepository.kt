@@ -1,8 +1,32 @@
 package repository.user
 
 import datastore.DataStore
+import db.User
+import model.user.UserId
+import java.time.LocalDate
 
 interface UserRepository {
+
+    fun select(id: UserId): User?
+
+    fun insert(id: UserId)
+
+    fun updateBirthdate(
+        id: UserId,
+        birthdate: LocalDate
+    )
+
+    fun updateIncludeBirthdateYear(
+        id: UserId,
+        includeBirthdateYear: Boolean
+    )
+
+    fun updateEnableBirthdateReminders(
+        id: UserId,
+        enableBirthdateReminders: Boolean
+    )
+
+    fun delete(id: UserId)
 
     companion object {
 
@@ -13,4 +37,35 @@ interface UserRepository {
 class UserRepositoryImpl(dataStore: DataStore) : UserRepository {
 
     private val queries = dataStore.userQueries
+
+    override fun select(id: UserId) = queries.select(id).executeAsOneOrNull()
+
+    override fun insert(id: UserId) {
+        queries.insert(id)
+    }
+
+    override fun updateBirthdate(
+        id: UserId,
+        birthdate: LocalDate
+    ) {
+        queries.updateBirthdate(birthdate, id)
+    }
+
+    override fun updateIncludeBirthdateYear(
+        id: UserId,
+        includeBirthdateYear: Boolean
+    ) {
+        queries.updateIncludeBirthdateYear(includeBirthdateYear, id)
+    }
+
+    override fun updateEnableBirthdateReminders(
+        id: UserId,
+        enableBirthdateReminders: Boolean
+    ) {
+        queries.updateEnableBirthdateReminders(enableBirthdateReminders, id)
+    }
+
+    override fun delete(id: UserId) {
+        queries.delete(id)
+    }
 }
