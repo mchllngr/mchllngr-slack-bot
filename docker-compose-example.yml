@@ -3,7 +3,7 @@ version: "3.9"
 services:
   slack-bot:
     container_name: slack-bot
-    image: "ghcr.io/mchllngr/mchllngr-slack-bot:main"
+    image: "ghcr.io/mchllngr/mchllngr-slack-bot:latest"
     restart: always
     environment:
       SLACK_BOT_TOKEN: xoxb-...
