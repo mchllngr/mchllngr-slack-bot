@@ -1,6 +1,8 @@
 # Build with gradle image
 FROM gradle:7.1.1 as builder
 
+WORKDIR /
+
 # Copy sourcecode into build image
 COPY build.gradle.kts ./
 COPY settings.gradle.kts ./
