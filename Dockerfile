@@ -1,5 +1,5 @@
 # Build with gradle image
-FROM gradle:7.1.1 as builder
+FROM gradle:7.3.3 as builder
 
 # Set working dir
 WORKDIR /
