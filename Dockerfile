@@ -5,10 +5,10 @@ FROM gradle:7.3.3 as builder
 WORKDIR /
 
 # Copy sourcecode into build image
-COPY build.gradle.kts ./
-COPY settings.gradle.kts ./
-COPY versions.properties ./
-COPY src/ ./src/
+COPY build.gradle.kts .
+COPY settings.gradle.kts .
+COPY versions.properties .
+COPY src/ src/
 
 # Build jar
 RUN gradle clean build --no-daemon
@@ -20,7 +20,7 @@ FROM adoptopenjdk/openjdk16:debianslim-jre
 WORKDIR /
 
 # Copy jar into runtime image
-COPY --from=builder ./home/gradle/build/libs/mchllngr-slack-bot-1.0.jar ./bot.jar
+COPY --from=builder build/libs/mchllngr-slack-bot-*.jar bot.jar
 
 # Run it
 CMD [ "java", "-jar",  "./bot.jar" ]
