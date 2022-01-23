@@ -26,7 +26,7 @@ import servicelocator.ServiceLocator.adminRepo
 import servicelocator.ServiceLocator.scriptHandler
 import servicelocator.ServiceLocator.teamRepo
 import util.slack.context.getUser
-import java.time.ZoneId
+import util.time.getZoneDateTimeFromUser
 import java.time.ZonedDateTime
 
 @OptIn(ExperimentalStdlibApi::class)
@@ -105,7 +105,7 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
     private fun Context.createHomeBlocks(
         user: User?
     ): List<LayoutBlock> {
-        val now: ZonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/Berlin"))
+        val now: ZonedDateTime = getZoneDateTimeFromUser(user)
 
         return buildList {
             addAll(helloBlocks.createBlocks(user))
