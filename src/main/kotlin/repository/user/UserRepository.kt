@@ -48,6 +48,7 @@ class UserRepositoryImpl(dataStore: DataStore) : UserRepository {
         id: UserId,
         birthdate: LocalDate
     ) {
+        // TODO insert new user if not exists
         queries.updateBirthdate(birthdate, id)
     }
 
@@ -55,6 +56,7 @@ class UserRepositoryImpl(dataStore: DataStore) : UserRepository {
         id: UserId,
         includeBirthdateYear: Boolean
     ) {
+        // TODO insert new user if not exists
         queries.updateIncludeBirthdateYear(includeBirthdateYear, id)
     }
 
@@ -62,6 +64,7 @@ class UserRepositoryImpl(dataStore: DataStore) : UserRepository {
         id: UserId,
         enableBirthdateReminders: Boolean
     ) {
+        // TODO insert new user if not exists
         queries.updateEnableBirthdateReminders(enableBirthdateReminders, id)
     }
 

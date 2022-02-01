@@ -25,6 +25,7 @@ import script.home.block.UserDataBlocks
 import servicelocator.ServiceLocator.adminRepo
 import servicelocator.ServiceLocator.scriptHandler
 import servicelocator.ServiceLocator.teamRepo
+import servicelocator.ServiceLocator.userRepo
 import util.slack.context.getUser
 import util.time.getZoneDateTimeFromUser
 import java.time.ZonedDateTime
@@ -35,7 +36,7 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
     private val helloBlocks by lazy { HelloBlocks() }
     private val teamBlocks by lazy { TeamBlocks(teamRepo) }
     private val birthdayBlocks by lazy { BirthdayBlocks() }
-    private val birthdayReminderBlocks by lazy { BirthdayReminderBlocks() }
+    private val birthdayReminderBlocks by lazy { BirthdayReminderBlocks(userRepo) }
     private val userDataBlocks by lazy { UserDataBlocks() }
     private val adminBlocks by lazy { AdminBlocks(adminRepo, scriptHandler) }
     private val footerBlocks by lazy { FooterBlocks() }
@@ -72,6 +73,7 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
         ctx: ActionContext
     ) {
         when (blockActionId) {
+            BirthdayReminderBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ENABLED_CHANGED -> birthdayReminderBlocks.onActionBirthdayReminderEnabledChanged(request, ctx)
             AdminBlocks.BLOCK_ACTION_ID_BOT_ENABLED_SELECTED -> adminBlocks.onActionBotEnabledSelected(request, ctx)
             AdminBlocks.BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED -> adminBlocks.onActionScriptEnabledSelected(request, ctx)
         }
@@ -117,7 +119,7 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
             addAll(birthdayBlocks.createBlocks())
             add(divider())
 
-            addAll(birthdayReminderBlocks.createBlocks())
+            addAll(birthdayReminderBlocks.createBlocks(user))
             add(divider())
 
             // #9 Build home/userData
