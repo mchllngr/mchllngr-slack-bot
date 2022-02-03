@@ -35,7 +35,7 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
 
     private val helloBlocks by lazy { HelloBlocks() }
     private val teamBlocks by lazy { TeamBlocks(teamRepo) }
-    private val birthdayBlocks by lazy { BirthdayBlocks() }
+    private val birthdayBlocks by lazy { BirthdayBlocks(userRepo) }
     private val birthdayReminderBlocks by lazy { BirthdayReminderBlocks(userRepo) }
     private val userDataBlocks by lazy { UserDataBlocks() }
     private val adminBlocks by lazy { AdminBlocks(adminRepo, scriptHandler) }
@@ -44,9 +44,9 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
     override val id = ID
 
     override val blockActionIds = listOf(
-        BirthdayBlocks.BLOCK_ACTION_ID_USER_BIRTHDAY_CHANGED,
-        BirthdayBlocks.BLOCK_ACTION_ID_USER_BIRTHDAY_INCLUDE_YEAR_CHANGED,
-        BirthdayBlocks.BLOCK_ACTION_ID_USER_BIRTHDAY_REMOVED,
+        BirthdayBlocks.BLOCK_ACTION_ID_BIRTHDAY_CHANGED,
+        BirthdayBlocks.BLOCK_ACTION_ID_BIRTHDAY_INCLUDE_YEAR_CHANGED,
+        BirthdayBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMOVED,
         BirthdayReminderBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ENABLED_CHANGED,
         BirthdayReminderBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ADD_ADDITIONAL_SELECTED,
         UserDataBlocks.BLOCK_ACTION_ID_USER_DATA_SHOW_SELECTED,
@@ -72,10 +72,14 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
         request: BlockActionRequest,
         ctx: ActionContext
     ) {
-        when (blockActionId) {
-            BirthdayReminderBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ENABLED_CHANGED -> birthdayReminderBlocks.onActionBirthdayReminderEnabledChanged(request, ctx)
-            AdminBlocks.BLOCK_ACTION_ID_BOT_ENABLED_SELECTED -> adminBlocks.onActionBotEnabledSelected(request, ctx)
-            AdminBlocks.BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED -> adminBlocks.onActionScriptEnabledSelected(request, ctx)
+        ctx.getUser(request)?.let { user ->
+            when (blockActionId) {
+                BirthdayBlocks.BLOCK_ACTION_ID_BIRTHDAY_CHANGED -> birthdayBlocks.onActionUserBirthdayChanged(user, request)
+                BirthdayBlocks.BLOCK_ACTION_ID_BIRTHDAY_INCLUDE_YEAR_CHANGED -> birthdayBlocks.onActionBirthdayIncludeYearChanged(user, request)
+                BirthdayReminderBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ENABLED_CHANGED -> birthdayReminderBlocks.onActionBirthdayReminderEnabledChanged(user, request)
+                AdminBlocks.BLOCK_ACTION_ID_BOT_ENABLED_SELECTED -> adminBlocks.onActionBotEnabledSelected(user, request)
+                AdminBlocks.BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED -> adminBlocks.onActionScriptEnabledSelected(user, request)
+            }
         }
 
         ctx.updateHomeView(
@@ -119,10 +123,10 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
                 add(divider())
             }
 
-            addAll(birthdayBlocks.createBlocks())
-            add(divider())
-
             user?.let {
+                addAll(birthdayBlocks.createBlocks(it))
+                add(divider())
+
                 addAll(birthdayReminderBlocks.createBlocks(it))
                 add(divider())
             }
@@ -131,7 +135,7 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
 //            addAll(userDataBlocks.createBlocks())
 //            add(divider())
 
-            adminBlocks.createBlocks(slackUser)?.let { blocks ->
+            slackUser?.let { adminBlocks.createBlocks(slackUser) }?.let { blocks ->
                 addAll(blocks)
                 add(divider())
             }

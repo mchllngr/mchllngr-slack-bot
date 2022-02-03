@@ -1,6 +1,5 @@
 package script.home.block
 
-import com.slack.api.bolt.context.Context
 import com.slack.api.bolt.request.builtin.BlockActionRequest
 import com.slack.api.model.block.Blocks.actions
 import com.slack.api.model.block.LayoutBlock
@@ -12,7 +11,7 @@ import model.blockaction.BlockActionId
 import model.user.UserId
 import repository.user.UserRepository
 import util.slack.block.headerSection
-import util.slack.context.getUser
+import util.slack.user.SlackUser
 
 class BirthdayReminderBlocks(
     private val userRepo: UserRepository
@@ -66,13 +65,11 @@ class BirthdayReminderBlocks(
     )
 
     fun onActionBirthdayReminderEnabledChanged(
-        request: BlockActionRequest,
-        ctx: Context
+        slackUser: SlackUser,
+        request: BlockActionRequest
     ) {
-        val user = ctx.getUser(request) ?: return
-
         val birthdayReminderEnabledChangedValue = request.getBirthdayReminderEnabledChangedValue()
-        userRepo.updateEnableBirthdateReminders(UserId(user.id), birthdayReminderEnabledChangedValue)
+        userRepo.updateEnableBirthdateReminders(UserId(slackUser.id), birthdayReminderEnabledChangedValue)
     }
 
     private fun BlockActionRequest.getBirthdayReminderEnabledChangedValue() = payload?.actions

@@ -1,6 +1,5 @@
 package script.home.block
 
-import com.slack.api.bolt.context.Context
 import com.slack.api.bolt.request.builtin.BlockActionRequest
 import com.slack.api.model.block.Blocks.actions
 import com.slack.api.model.block.Blocks.section
@@ -16,7 +15,6 @@ import script.base.ScriptHandler
 import util.slack.block.headerSection
 import util.slack.block.markdownSection
 import util.slack.block.plainTextSection
-import util.slack.context.getUser
 import util.slack.user.SlackUser
 import util.slack.user.isBotAdmin
 
@@ -27,7 +25,7 @@ class AdminBlocks(
 
     @OptIn(ExperimentalStdlibApi::class)
     fun createBlocks(
-        slackUser: SlackUser?
+        slackUser: SlackUser
     ): List<LayoutBlock>? {
         if (!slackUser.isBotAdmin) return null
 
@@ -82,25 +80,23 @@ class AdminBlocks(
     }
 
     fun onActionBotEnabledSelected(
-        request: BlockActionRequest,
-        ctx: Context
+        slackUser: SlackUser,
+        request: BlockActionRequest
     ) {
-        val user = ctx.getUser(request)
-        if (!user.isBotAdmin) return
+        if (!slackUser.isBotAdmin) return
 
         val isBotEnabled = request.getSelectedBotEnabledValue()
-        if (isBotEnabled != null) adminRepo.setBotEnabled(user, isBotEnabled)
+        if (isBotEnabled != null) adminRepo.setBotEnabled(slackUser, isBotEnabled)
     }
 
     fun onActionScriptEnabledSelected(
-        request: BlockActionRequest,
-        ctx: Context
+        slackUser: SlackUser,
+        request: BlockActionRequest
     ) {
-        val user = ctx.getUser(request)
-        if (!user.isBotAdmin) return
+        if (!slackUser.isBotAdmin) return
 
         val scriptEnabledAction = request.getSelectedScriptEnabledAction()
-        if (scriptEnabledAction != null) adminRepo.setScriptEnabled(user, scriptEnabledAction.id, scriptEnabledAction.enabled)
+        if (scriptEnabledAction != null) adminRepo.setScriptEnabled(slackUser, scriptEnabledAction.id, scriptEnabledAction.enabled)
     }
 
     private fun BlockActionRequest.getSelectedBotEnabledValue() = payload?.actions?.find { it?.actionId == BLOCK_ACTION_ID_BOT_ENABLED_SELECTED.id }?.value?.toBoolean()
