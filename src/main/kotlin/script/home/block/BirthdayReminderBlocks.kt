@@ -73,11 +73,15 @@ class BirthdayReminderBlocks(
     ) {
         val user = ctx.getUser(request) ?: return
 
-        val birthdayReminderEnabledChangedValue = request.getBirthdayReminderEnabledChangedValue() // FIXME always null
-        if (birthdayReminderEnabledChangedValue != null) userRepo.updateEnableBirthdateReminders(UserId(user.id), birthdayReminderEnabledChangedValue)
+        val birthdayReminderEnabledChangedValue = request.getBirthdayReminderEnabledChangedValue()
+        userRepo.updateEnableBirthdateReminders(UserId(user.id), birthdayReminderEnabledChangedValue)
     }
 
-    private fun BlockActionRequest.getBirthdayReminderEnabledChangedValue() = payload?.actions?.find { it?.actionId == BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ENABLED_CHANGED.id }?.value?.toBoolean()
+    private fun BlockActionRequest.getBirthdayReminderEnabledChangedValue() = payload?.actions
+        ?.find { it?.actionId == BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ENABLED_CHANGED.id }
+        ?.selectedOptions?.firstOrNull()
+        ?.value?.toBoolean()
+        ?: false
 
     companion object {
 
