@@ -5,7 +5,6 @@ import com.slack.api.bolt.context.Context
 import com.slack.api.bolt.context.builtin.ActionContext
 import com.slack.api.bolt.context.builtin.EventContext
 import com.slack.api.bolt.request.builtin.BlockActionRequest
-import com.slack.api.model.User
 import com.slack.api.model.block.Blocks.divider
 import com.slack.api.model.block.LayoutBlock
 import com.slack.api.model.event.AppHomeOpenedEvent
@@ -27,7 +26,8 @@ import servicelocator.ServiceLocator.scriptHandler
 import servicelocator.ServiceLocator.teamRepo
 import servicelocator.ServiceLocator.userRepo
 import util.slack.context.getUser
-import util.time.getZoneDateTimeFromUser
+import util.slack.user.SlackUser
+import util.time.getZoneDateTimeFromSlackUser
 import java.time.ZonedDateTime
 
 @OptIn(ExperimentalStdlibApi::class)
@@ -105,28 +105,33 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
     }
 
     private fun Context.createHomeBlocks(
-        user: User?
+        slackUser: SlackUser?
     ): List<LayoutBlock> {
-        val now: ZonedDateTime = getZoneDateTimeFromUser(user)
+        val now: ZonedDateTime = getZoneDateTimeFromSlackUser(slackUser)
+        val user = slackUser?.id?.let { userRepo.select(UserId(it)) }
 
         return buildList {
-            addAll(helloBlocks.createBlocks(user))
+            addAll(helloBlocks.createBlocks(slackUser))
             add(divider())
 
-            addAll(teamBlocks.createBlocks(user))
-            add(divider())
+            slackUser?.let {
+                addAll(teamBlocks.createBlocks(it))
+                add(divider())
+            }
 
             addAll(birthdayBlocks.createBlocks())
             add(divider())
 
-            addAll(birthdayReminderBlocks.createBlocks(user))
-            add(divider())
+            user?.let {
+                addAll(birthdayReminderBlocks.createBlocks(it))
+                add(divider())
+            }
 
             // #9 Build home/userData
 //            addAll(userDataBlocks.createBlocks())
 //            add(divider())
 
-            adminBlocks.createBlocks(user)?.let { blocks ->
+            adminBlocks.createBlocks(slackUser)?.let { blocks ->
                 addAll(blocks)
                 add(divider())
             }

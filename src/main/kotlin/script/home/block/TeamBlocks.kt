@@ -1,6 +1,5 @@
 package script.home.block
 
-import com.slack.api.model.User
 import com.slack.api.model.block.Blocks.section
 import com.slack.api.model.block.LayoutBlock
 import com.slack.api.model.block.composition.BlockCompositions.markdownText
@@ -11,6 +10,7 @@ import util.charsequence.joinToString
 import util.slack.block.headerSection
 import util.slack.block.markdownSection
 import util.slack.block.plainTextSection
+import util.slack.user.SlackUser
 
 class TeamBlocks(
     private val teamRepo: TeamRepository
@@ -18,11 +18,11 @@ class TeamBlocks(
 
     @OptIn(ExperimentalStdlibApi::class)
     fun createBlocks(
-        user: User?
+        slackUser: SlackUser
     ): List<LayoutBlock> = buildList {
         this += headerSection(text = ":busts_in_silhouette: Team", emoji = true)
 
-        val teamsForUser = user?.let { teamRepo.getTeamsForUser(UserId(it.id)) } ?: emptyList()
+        val teamsForUser = teamRepo.getTeamsForUser(UserId(slackUser.id))
         if (teamsForUser.isEmpty()) {
             this += plainTextSection("Du gehörst keinem Team an.")
             return@buildList

@@ -2,7 +2,6 @@ package script.home.block
 
 import com.slack.api.bolt.context.Context
 import com.slack.api.bolt.request.builtin.BlockActionRequest
-import com.slack.api.model.User
 import com.slack.api.model.block.Blocks.actions
 import com.slack.api.model.block.Blocks.section
 import com.slack.api.model.block.LayoutBlock
@@ -18,6 +17,7 @@ import util.slack.block.headerSection
 import util.slack.block.markdownSection
 import util.slack.block.plainTextSection
 import util.slack.context.getUser
+import util.slack.user.SlackUser
 import util.slack.user.isBotAdmin
 
 class AdminBlocks(
@@ -27,9 +27,9 @@ class AdminBlocks(
 
     @OptIn(ExperimentalStdlibApi::class)
     fun createBlocks(
-        user: User?
+        slackUser: SlackUser?
     ): List<LayoutBlock>? {
-        if (!user.isBotAdmin) return null
+        if (!slackUser.isBotAdmin) return null
 
         val isBotEnabled = adminRepo.isBotEnabled()
 

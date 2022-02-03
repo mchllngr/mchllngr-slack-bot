@@ -1,10 +1,10 @@
 package repository.admin
 
-import com.slack.api.model.User
 import datastore.DataStore
 import db.Script
 import model.script.ScriptId
 import repository.script.ScriptRepository
+import util.slack.user.SlackUser
 import util.slack.user.isBotAdmin
 
 interface AdminRepository {
@@ -12,7 +12,7 @@ interface AdminRepository {
     fun isBotEnabled(): Boolean
 
     fun setBotEnabled(
-        user: User?,
+        slackUser: SlackUser?,
         enabled: Boolean
     )
 
@@ -23,7 +23,7 @@ interface AdminRepository {
     fun isScriptEnabled(id: ScriptId): Boolean
 
     fun setScriptEnabled(
-        user: User?,
+        slackUser: SlackUser?,
         id: ScriptId,
         enabled: Boolean
     )
@@ -47,10 +47,10 @@ class AdminRepositoryImpl(
     override fun isBotEnabled() = runCatching { queries.selectAdmin().executeAsOneOrNull()?.botEnabled }.getOrNull() ?: true
 
     override fun setBotEnabled(
-        user: User?,
+        slackUser: SlackUser?,
         enabled: Boolean
     ) {
-        if (!user.isBotAdmin) return
+        if (!slackUser.isBotAdmin) return
 
         queries.updateBotEnabled(enabled)
     }
@@ -64,11 +64,11 @@ class AdminRepositoryImpl(
     override fun isScriptEnabled(id: ScriptId) = scriptRepo.isEnabled(id)
 
     override fun setScriptEnabled(
-        user: User?,
+        slackUser: SlackUser?,
         id: ScriptId,
         enabled: Boolean
     ) {
-        if (!user.isBotAdmin) return
+        if (!slackUser.isBotAdmin) return
 
         scriptRepo.setEnabled(id, enabled)
     }
