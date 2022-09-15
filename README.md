@@ -37,6 +37,10 @@
         -e DATABASE_PASSWORD='SOME_PASSWORD' \
         IMAGE_NAME
   ```
+  
+### Watchtower
+
+You can use [Watchtower](https://containrrr.dev/watchtower/) to automatically keep your docker container up to date. See [watchtower/docker-compose-example.yml](watchtower/docker-compose-example.yml).
 
 ## Helpful links
 
