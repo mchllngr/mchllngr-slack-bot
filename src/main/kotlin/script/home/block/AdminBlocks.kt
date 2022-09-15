@@ -23,7 +23,6 @@ class AdminBlocks(
     private val scriptHandler: ScriptHandler
 ) {
 
-    @OptIn(ExperimentalStdlibApi::class)
     fun createBlocks(
         slackUser: SlackUser
     ): List<LayoutBlock>? {

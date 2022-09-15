@@ -30,7 +30,6 @@ import util.slack.user.SlackUser
 import util.time.getZoneDateTimeFromSlackUser
 import java.time.ZonedDateTime
 
-@OptIn(ExperimentalStdlibApi::class)
 class HomeScript : AppHomeOpenedScript, BlockActionScript {
 
     private val helloBlocks by lazy { HelloBlocks() }

@@ -16,7 +16,6 @@ class TeamBlocks(
     private val teamRepo: TeamRepository
 ) {
 
-    @OptIn(ExperimentalStdlibApi::class)
     fun createBlocks(
         slackUser: SlackUser
     ): List<LayoutBlock> = buildList {
@@ -38,7 +37,6 @@ class TeamBlocks(
         else "Du gehörst den Teams *${teamNames.joinToString(separator = ", ", lastSeparator = " und ")}* an."
     }
 
-    @OptIn(ExperimentalStdlibApi::class)
     fun getTeamBlocks(teamsForUser: List<Team>): List<LayoutBlock> = buildList {
         teamsForUser.forEach { team ->
             this += markdownSection("Teammitglieder *${team.name}*:")
