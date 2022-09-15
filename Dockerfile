@@ -14,7 +14,7 @@ COPY src/ src/
 RUN gradle clean build --no-daemon
 
 # Switch to the java runtime image
-FROM adoptopenjdk/openjdk16:debianslim-jre
+FROM eclipse-temurin:18-jre-alpine
 
 # Set working dir
 WORKDIR /
