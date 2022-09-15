@@ -1,3 +1,5 @@
+// ktlint-disable filename
+
 package util.charsequence
 
 fun <T : CharSequence> Iterable<T>.joinToString(

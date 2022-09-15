@@ -54,7 +54,7 @@ class BirthdayBlocks(
                     it.options(listOf(option))
                 }
             )
-        ),
+        )
 //        // #11 Allow user to remove own birthday
 //        section { section ->
 //            section

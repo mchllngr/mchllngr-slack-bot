@@ -24,12 +24,12 @@ object DatabaseFactory {
             birthdateAdapter = LocalDateColumnAdapter()
         ),
         teamAdapter = Team.Adapter(
-            idAdapter = TeamIdColumnAdapter(),
+            idAdapter = TeamIdColumnAdapter()
         ),
         teamUserAdapter = TeamUser.Adapter(
             idAdapter = TeamUserIdColumnAdapter(),
             teamIdAdapter = TeamIdColumnAdapter(),
-            userIdAdapter = UserIdColumnAdapter(),
+            userIdAdapter = UserIdColumnAdapter()
         )
     )
 }

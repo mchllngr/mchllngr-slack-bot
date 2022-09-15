@@ -1,3 +1,5 @@
+// ktlint-disable filename
+
 import script.home.HomeScript
 import servicelocator.ServiceLocator.config
 import servicelocator.ServiceLocator.dataStore

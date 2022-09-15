@@ -1,3 +1,5 @@
+// ktlint-disable filename
+
 package util.time
 
 import util.slack.user.SlackUser

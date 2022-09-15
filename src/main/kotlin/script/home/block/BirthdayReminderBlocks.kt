@@ -36,7 +36,7 @@ class BirthdayReminderBlocks(
                     it.options(listOf(option))
                 }
             )
-        ),
+        )
 //        // #10 Build home/birthdayReminder
 //        section { section ->
 //            section
