@@ -2,9 +2,11 @@ package script.base
 
 import com.slack.api.bolt.App
 import com.slack.api.bolt.handler.builtin.BlockActionHandler
+import com.slack.api.bolt.handler.builtin.SlashCommandHandler
 import com.slack.api.model.event.AppHomeOpenedEvent
 import com.slack.api.model.event.MessageEvent
 import model.blockaction.BlockActionId
+import model.command.CommandId
 import model.script.ScriptId
 import model.user.UserId
 import repository.admin.AdminRepository
@@ -35,6 +37,7 @@ class ScriptHandler(
         app.apply {
             registerAppHomeOpenedScripts()
             registerMessageScripts()
+            registerCommandScripts()
             registerBlockActionScripts()
         }
 
@@ -44,6 +47,8 @@ class ScriptHandler(
     }
 
     fun getScriptIds() = scripts.keys.toSet()
+
+    // region AppHomeOpenedScripts
 
     private fun App.registerAppHomeOpenedScripts() {
         val appHomeOpenedScripts = scripts.values.filterIsInstance<AppHomeOpenedScript>()
@@ -63,6 +68,10 @@ class ScriptHandler(
         }
     }
 
+    // endregion
+
+    // region MessageScripts
+
     private fun App.registerMessageScripts() {
         val messageScripts = scripts.values.filterIsInstance<MessageScript>()
 
@@ -76,6 +85,77 @@ class ScriptHandler(
             ctx.ack()
         }
     }
+
+    // endregion
+
+    // region CommandScripts
+
+    private fun App.registerCommandScripts() {
+        val commandScripts = scripts.values.filterIsInstance<CommandScript>()
+        val commandIdToScript = commandScripts.toMapOfCommandIdToScripts()
+
+        commandIdToScript
+            .forEach { (commandId, scripts) ->
+                when (commandId) {
+                    is CommandId.User -> registerUserCommandScripts(commandId, scripts)
+                    is CommandId.Admin -> registerAdminCommandScripts(commandId, scripts)
+                }
+            }
+    }
+
+    private fun List<CommandScript>.toMapOfCommandIdToScripts(): Map<CommandId, List<CommandScript>> {
+        val commandIdToScript = mutableMapOf<CommandId, MutableList<CommandScript>>()
+        forEach { script ->
+            script.commandIds.forEach { id ->
+                val scriptsForId = commandIdToScript[id]
+                if (scriptsForId == null) commandIdToScript[id] = mutableListOf(script)
+                else scriptsForId += script
+            }
+        }
+        return commandIdToScript
+    }
+
+    private fun App.registerUserCommandScripts(
+        commandId: CommandId.User,
+        scripts: List<CommandScript>
+    ) {
+        val handler = SlashCommandHandler { request, ctx ->
+            if (!adminRepo.isBotEnabled()) return@SlashCommandHandler ctx.ack()
+
+            scripts
+                .filter { adminRepo.isScriptEnabled(it.id) } // #14 improve performance when checking if scripts are enabled
+                .forEach { it.onCommandEvent(commandId, request, ctx) }
+
+            ctx.ack()
+        }
+
+        when (commandId) {
+            is CommandId.User.Str -> command(commandId.id, handler)
+            is CommandId.User.Regex -> command(commandId.idRegex.toPattern(), handler)
+        }
+    }
+
+    private fun App.registerAdminCommandScripts(
+        commandId: CommandId.Admin,
+        scripts: List<CommandScript>
+    ) {
+        val handler = SlashCommandHandler { request, ctx ->
+            if (!ctx.getUser(request).isBotAdmin) return@SlashCommandHandler ctx.ack()
+
+            scripts.forEach { it.onCommandEvent(commandId, request, ctx) }
+
+            ctx.ack()
+        }
+
+        when (commandId) {
+            is CommandId.Admin.Str -> command(commandId.id, handler)
+            is CommandId.Admin.Regex -> command(commandId.idRegex.toPattern(), handler)
+        }
+    }
+
+    // endregion
+
+    // region BlockActionScripts
 
     private fun App.registerBlockActionScripts() {
         val blockActionScripts = scripts.values.filterIsInstance<BlockActionScript>()
@@ -139,6 +219,8 @@ class ScriptHandler(
             is BlockActionId.Admin.Regex -> blockAction(blockActionId.idRegex.toPattern(), handler)
         }
     }
+
+    // endregion
 
     companion object {
 

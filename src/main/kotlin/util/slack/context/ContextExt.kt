@@ -2,6 +2,7 @@ package util.slack.context
 
 import com.slack.api.bolt.context.Context
 import com.slack.api.bolt.request.builtin.BlockActionRequest
+import com.slack.api.bolt.request.builtin.SlashCommandRequest
 import com.slack.api.methods.response.chat.ChatPostMessageResponse
 import com.slack.api.methods.response.users.UsersInfoResponse
 import com.slack.api.model.Conversation
@@ -38,6 +39,8 @@ fun Context.getUser(userId: UserId): User? {
     }
     return if (usersInfo.isOk) usersInfo.user else null
 }
+
+fun Context.getUser(request: SlashCommandRequest) = getUser(UserId(request.payload.userId))
 
 fun Context.getUser(request: BlockActionRequest) = getUser(UserId(request.payload.user.id))
 
