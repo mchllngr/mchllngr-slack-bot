@@ -4,6 +4,7 @@ import com.slack.api.bolt.context.Context
 import com.slack.api.model.block.Blocks.context
 import com.slack.api.model.block.ContextBlock
 import com.slack.api.model.block.composition.BlockCompositions.markdownText
+import model.user.usernameString
 import servicelocator.ServiceLocator.config
 import util.charsequence.joinToString
 import util.slack.context.userExists
@@ -20,7 +21,7 @@ class FooterBlocks {
     ): List<ContextBlock> {
         val admins = config.admin.ids
             .filter { ctx.userExists(it) }
-            .map { "<@${it.id}>" }
+            .map { it.usernameString }
             .joinToString(separator = ", ", lastSeparator = " oder ")
 
         val helpText = buildString {

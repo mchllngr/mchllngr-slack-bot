@@ -5,6 +5,7 @@ import com.slack.api.model.block.LayoutBlock
 import com.slack.api.model.block.composition.BlockCompositions.markdownText
 import db.Team
 import model.user.UserId
+import model.user.usernameString
 import repository.team.TeamRepository
 import util.charsequence.joinToString
 import util.slack.block.headerSection
@@ -42,7 +43,7 @@ class TeamBlocks(
             this += markdownSection("Teammitglieder *${team.name}*:")
 
             val usersInTeam = teamRepo.getUsersForTeam(team.id)
-                .map { user -> markdownText("<@${user.id.id}> ${if (user.admin) " *(Teamadmin)*" else ""}") }
+                .map { user -> markdownText("${user.id.usernameString} ${if (user.admin) " *(Teamadmin)*" else ""}") }
             this += section { it.fields(usersInTeam) }
         }
     }
