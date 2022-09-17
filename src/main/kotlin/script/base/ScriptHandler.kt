@@ -46,6 +46,8 @@ class ScriptHandler(
         }
     }
 
+    fun getScripts(): Map<ScriptId, Script> = scripts.toMap()
+
     fun getScriptIds() = scripts.keys.toSet()
 
     // region AppHomeOpenedScripts

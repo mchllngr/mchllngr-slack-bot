@@ -19,6 +19,7 @@ import script.home.block.BirthdayBlocks
 import script.home.block.BirthdayReminderBlocks
 import script.home.block.FooterBlocks
 import script.home.block.HelloBlocks
+import script.home.block.ScriptConfigBlocks
 import script.home.block.TeamBlocks
 import script.home.block.UserDataBlocks
 import servicelocator.ServiceLocator.adminRepo
@@ -38,6 +39,7 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
     private val birthdayReminderBlocks by lazy { BirthdayReminderBlocks(userRepo) }
     private val userDataBlocks by lazy { UserDataBlocks() }
     private val adminBlocks by lazy { AdminBlocks(adminRepo, scriptHandler) }
+    private val scriptConfigBlocks by lazy { ScriptConfigBlocks(adminRepo, scriptHandler) }
     private val footerBlocks by lazy { FooterBlocks() }
 
     override val id = ID
@@ -136,6 +138,11 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
 //            add(divider())
 
             slackUser?.let { adminBlocks.createBlocks(slackUser) }?.let { blocks ->
+                addAll(blocks)
+                add(divider())
+            }
+
+            slackUser?.let { scriptConfigBlocks.createBlocks(slackUser) }?.let { blocks ->
                 addAll(blocks)
                 add(divider())
             }

@@ -110,7 +110,7 @@ class AdminBlocks(
         return if (scriptId != null && enabled != null) ScriptEnabledAction(scriptId, enabled) else null
     }
 
-    data class ScriptEnabledAction(
+    private data class ScriptEnabledAction(
         val id: ScriptId,
         val enabled: Boolean
     )

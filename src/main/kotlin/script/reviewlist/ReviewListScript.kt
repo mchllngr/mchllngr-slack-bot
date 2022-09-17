@@ -3,11 +3,14 @@ package script.reviewlist
 import com.slack.api.app_backend.slash_commands.response.SlashCommandResponse
 import com.slack.api.bolt.context.builtin.SlashCommandContext
 import com.slack.api.bolt.request.builtin.SlashCommandRequest
+import com.slack.api.model.block.LayoutBlock
 import model.command.CommandId
 import model.script.ScriptId
 import script.base.CommandScript
+import script.base.Configurable
+import util.slack.block.markdownSection
 
-class ReviewListScript : CommandScript {
+class ReviewListScript : CommandScript, Configurable {
 
     override val id = ID
 
@@ -21,8 +24,18 @@ class ReviewListScript : CommandScript {
         ctx.respond(
             SlashCommandResponse.builder()
                 .responseType(RESPONSE_TYPE_IN_CHANNEL)
-                .text("Received command: '$commandId'")
+                .blocks(
+                    listOf(
+                        markdownSection("Received command: *'$commandId'*")
+                    )
+                )
                 .build()
+        )
+    }
+
+    override fun getConfigBlocks(): List<LayoutBlock> {
+        return listOf(
+            markdownSection("TODO config")
         )
     }
 
