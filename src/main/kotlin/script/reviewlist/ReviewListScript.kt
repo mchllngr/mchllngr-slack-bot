@@ -3,14 +3,18 @@ package script.reviewlist
 import com.slack.api.app_backend.slash_commands.response.SlashCommandResponse
 import com.slack.api.bolt.context.builtin.SlashCommandContext
 import com.slack.api.bolt.request.builtin.SlashCommandRequest
-import com.slack.api.model.block.LayoutBlock
 import model.command.CommandId
 import model.script.ScriptId
 import script.base.CommandScript
-import script.base.Configurable
+import script.base.config.ConfigBlock
+import script.base.config.ConfigBlockText
+import script.base.config.Configurable
+import util.logger.getLogger
 import util.slack.block.markdownSection
 
 class ReviewListScript : CommandScript, Configurable {
+
+    private val logger = getLogger()
 
     override val id = ID
 
@@ -33,9 +37,15 @@ class ReviewListScript : CommandScript, Configurable {
         )
     }
 
-    override fun getConfigBlocks(): List<LayoutBlock> {
+    override fun getConfigBlocks(): List<ConfigBlock> {
         return listOf(
-            markdownSection("TODO config")
+            ConfigBlockText(
+                id = "ABSENCE_API_KEY",
+                label = "absence.io API Key",
+                placeholder = "API Key"
+            ) {
+                logger.error("$id Config: $it")
+            }
         )
     }
 

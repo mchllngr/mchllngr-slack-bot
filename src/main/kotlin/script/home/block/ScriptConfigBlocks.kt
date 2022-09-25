@@ -2,8 +2,8 @@ package script.home.block
 
 import com.slack.api.model.block.LayoutBlock
 import repository.admin.AdminRepository
-import script.base.Configurable
 import script.base.ScriptHandler
+import script.base.config.Configurable
 import util.slack.block.headerSection
 import util.slack.block.markdownSection
 import util.slack.user.SlackUser
@@ -30,7 +30,7 @@ class ScriptConfigBlocks(
 
             scripts.forEach { (id, script) ->
                 this += markdownSection("Skript *${id.id}*")
-                this += script.getConfigBlocks()
+                this += script.getConfigBlocks().map { it.getLayoutBlock() }
             }
 
         }
