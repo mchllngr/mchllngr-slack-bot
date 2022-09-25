@@ -3,11 +3,11 @@ package script.home.block
 import com.slack.api.bolt.request.builtin.BlockActionRequest
 import com.slack.api.model.block.LayoutBlock
 import model.blockaction.BlockActionId
-import model.script.ScriptId
 import repository.admin.AdminRepository
 import script.base.ScriptHandler
 import script.base.config.Configurable
-import script.base.config.block.ConfigBlockId
+import script.base.config.block.ConfigBlockResponse
+import util.logger.getLogger
 import util.slack.block.headerSection
 import util.slack.block.markdownSection
 import util.slack.user.SlackUser
@@ -17,6 +17,8 @@ class ScriptConfigBlocks(
     private val adminRepo: AdminRepository,
     private val scriptHandler: ScriptHandler
 ) {
+
+    private val logger = getLogger()
 
     private val configurableScripts by lazy {
         scriptHandler.getScripts()
@@ -55,24 +57,25 @@ class ScriptConfigBlocks(
         user: SlackUser,
         request: BlockActionRequest
     ) {
-        request.getActions().forEach { action ->
+        request.getConfigBlockResponses().forEach { response ->
             configurableScripts
-                .filter { (scriptId, script) -> scriptId == action.scriptId && action.configBlockId in script.configBlockIds }
-                .forEach { (_, script) -> script.onConfigChange(user, action.configBlockId, action.value) }
+                .filter { (scriptId, script) -> scriptId == response.scriptId && response.configBlockId in script.configBlockIds }
+                .forEach { (_, script) ->
+                    logger.debug(
+                        """Config changes:
+                        |    ScriptId: ${response.scriptId.id}
+                        |    User: ${user.id}
+                        |    ConfigBlockId: ${response.configBlockId.id}
+                        |    New value: ${response.value}
+                        """.trimMargin()
+                    )
+                    script.onConfigChange(user, response)
+                }
         }
     }
 
-    private fun BlockActionRequest.getActions() = payload?.actions?.map { action ->
-        ConfigAction(
-            ScriptId(action.blockId),
-            ConfigBlockId(action.actionId),
-            action.value
-        )
-    } ?: emptyList()
-
-    private data class ConfigAction(
-        val scriptId: ScriptId,
-        val configBlockId: ConfigBlockId,
-        val value: String?
-    )
+    private fun BlockActionRequest.getConfigBlockResponses() = payload?.actions
+        ?.filterNotNull()
+        ?.map { ConfigBlockResponse.from(it) }
+        ?: emptyList()
 }

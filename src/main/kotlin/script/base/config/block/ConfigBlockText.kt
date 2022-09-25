@@ -9,20 +9,17 @@ import model.script.ScriptId
 import com.slack.api.model.block.composition.DispatchActionConfig as SlackDispatchActionConfig
 
 data class ConfigBlockText(
-    val scriptId: ScriptId,
-    val id: ConfigBlockId,
-    val label: PlainTextObject,
-    val hint: PlainTextObject? = null,
-    val placeholder: PlainTextObject? = null,
-    val initialValue: String? = null,
-    val multiline: Boolean = false,
-    val minLength: Int? = null,
-    val maxLength: Int? = null,
-    val dispatchActionConfig: DispatchActionConfig = DispatchActionConfig.ON_ENTER_PRESSED
-) : ConfigBlock {
-
-    override val blockId = scriptId.id
-    override val actionId = id.id
+    private val scriptId: ScriptId,
+    private val id: ConfigBlockId,
+    private val label: PlainTextObject,
+    private val hint: PlainTextObject? = null,
+    private val placeholder: PlainTextObject? = null,
+    private val initialValue: String? = null,
+    private val multiline: Boolean = false,
+    private val minLength: Int? = null,
+    private val maxLength: Int? = null,
+    private val dispatchActionConfig: DispatchActionConfig = DispatchActionConfig.ON_ENTER_PRESSED
+) : ConfigBlock(scriptId, id) {
 
     constructor(
         scriptId: ScriptId,
