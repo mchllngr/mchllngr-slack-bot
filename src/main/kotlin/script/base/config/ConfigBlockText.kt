@@ -5,11 +5,12 @@ import com.slack.api.model.block.LayoutBlock
 import com.slack.api.model.block.composition.BlockCompositions.plainText
 import com.slack.api.model.block.composition.PlainTextObject
 import com.slack.api.model.block.element.BlockElements.plainTextInput
+import model.script.ScriptId
 import com.slack.api.model.block.composition.DispatchActionConfig as SlackDispatchActionConfig
 
 data class ConfigBlockText(
-    val scriptId: String,
-    val id: String,
+    val scriptId: ScriptId,
+    val id: ConfigBlockId,
     val label: PlainTextObject,
     val hint: PlainTextObject? = null,
     val placeholder: PlainTextObject? = null,
@@ -17,15 +18,15 @@ data class ConfigBlockText(
     val multiline: Boolean = false,
     val minLength: Int? = null,
     val maxLength: Int? = null,
-    val dispatchActionConfig: DispatchActionConfig = DispatchActionConfig.ON_ENTER_PRESSED,
-    val onChange: (String) -> Unit
+    val dispatchActionConfig: DispatchActionConfig = DispatchActionConfig.ON_ENTER_PRESSED
 ) : ConfigBlock {
 
-    override val actionId = "${scriptId}_text_$id"
+    override val blockId = scriptId.id
+    override val actionId = id.id
 
     constructor(
-        scriptId: String,
-        id: String,
+        scriptId: ScriptId,
+        id: ConfigBlockId,
         label: String,
         hint: String? = null,
         placeholder: String? = null,
@@ -33,8 +34,7 @@ data class ConfigBlockText(
         multiline: Boolean = false,
         minLength: Int? = null,
         maxLength: Int? = null,
-        dispatchActionConfig: DispatchActionConfig = DispatchActionConfig.ON_ENTER_PRESSED,
-        onChange: (String) -> Unit
+        dispatchActionConfig: DispatchActionConfig = DispatchActionConfig.ON_ENTER_PRESSED
     ) : this(
         scriptId = scriptId,
         id = id,
@@ -45,12 +45,11 @@ data class ConfigBlockText(
         multiline = multiline,
         minLength = minLength,
         maxLength = maxLength,
-        dispatchActionConfig = dispatchActionConfig,
-        onChange = onChange,
+        dispatchActionConfig = dispatchActionConfig
     )
 
     override fun getLayoutBlock(): LayoutBlock = input { input ->
-        input.blockId(actionId)
+        input.blockId(blockId)
         input.label(label)
         input.hint(hint)
         input.dispatchAction(true)

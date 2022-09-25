@@ -6,10 +6,10 @@ import com.slack.api.bolt.request.builtin.SlashCommandRequest
 import com.slack.api.methods.response.chat.ChatPostMessageResponse
 import com.slack.api.methods.response.users.UsersInfoResponse
 import com.slack.api.model.Conversation
-import com.slack.api.model.User
 import com.slack.api.model.block.LayoutBlock
 import model.user.UserId
 import servicelocator.ServiceLocator.config
+import util.slack.user.SlackUser
 
 fun Context.getConversation(name: String): Conversation? {
     try {
@@ -32,7 +32,7 @@ fun Context.postChatMessageInChannel(
         .blocks(blocksBuilder())
 }
 
-fun Context.getUser(userId: UserId): User? {
+fun Context.getUser(userId: UserId): SlackUser? {
     val usersInfo: UsersInfoResponse = client().usersInfo {
         it.token(config.token.bot)
         it.user(userId.id)

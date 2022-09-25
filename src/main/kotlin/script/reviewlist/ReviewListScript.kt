@@ -6,11 +6,12 @@ import com.slack.api.bolt.request.builtin.SlashCommandRequest
 import model.command.CommandId
 import model.script.ScriptId
 import script.base.CommandScript
-import script.base.config.ConfigBlock
+import script.base.config.ConfigBlockId
 import script.base.config.ConfigBlockText
 import script.base.config.Configurable
 import util.logger.getLogger
 import util.slack.block.markdownSection
+import util.slack.user.SlackUser
 
 class ReviewListScript : CommandScript, Configurable {
 
@@ -19,6 +20,8 @@ class ReviewListScript : CommandScript, Configurable {
     override val id = ID
 
     override val commandIds = listOf(COMMAND_ID_REVIEW_LIST)
+
+    override val configBlockIds = listOf(CONFIG_ACTION_ID_ABSENCE_API_KEY)
 
     override fun onCommandEvent(
         commandId: CommandId,
@@ -37,16 +40,21 @@ class ReviewListScript : CommandScript, Configurable {
         )
     }
 
-    override fun getConfigBlocks(): List<ConfigBlock> {
-        return listOf(
-            ConfigBlockText(
-                id = "ABSENCE_API_KEY",
-                label = "absence.io API Key",
-                placeholder = "API Key"
-            ) {
-                logger.error("$id Config: $it")
-            }
+    override fun getConfigBlocks() = listOf(
+        ConfigBlockText(
+            scriptId = id,
+            id = CONFIG_ACTION_ID_ABSENCE_API_KEY,
+            label = "absence.io API Key",
+            placeholder = "API Key"
         )
+    )
+
+    override fun onConfigChange(
+        user: SlackUser,
+        configBlockId: ConfigBlockId,
+        value: String?
+    ) {
+        logger.error("${id.id} Config: ${user.realName} changed '${configBlockId.id}' to '$value'")
     }
 
     companion object {
@@ -54,6 +62,8 @@ class ReviewListScript : CommandScript, Configurable {
         val ID = ScriptId("REVIEW_LIST")
 
         private val COMMAND_ID_REVIEW_LIST = CommandId.User.Str("/reviewlist")
+
+        private val CONFIG_ACTION_ID_ABSENCE_API_KEY = ConfigBlockId("ABSENCE_API_KEY")
 
         private const val RESPONSE_TYPE_IN_CHANNEL = "in_channel"
     }
