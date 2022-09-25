@@ -1,4 +1,4 @@
-package script.base.config
+package script.base.config.block
 
 import com.slack.api.model.block.LayoutBlock
 

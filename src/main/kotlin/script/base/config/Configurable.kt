@@ -1,6 +1,8 @@
 package script.base.config
 
 import script.base.Script
+import script.base.config.block.ConfigBlock
+import script.base.config.block.ConfigBlockId
 import util.slack.user.SlackUser
 
 interface Configurable : Script {

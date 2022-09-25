@@ -6,8 +6,8 @@ import model.blockaction.BlockActionId
 import model.script.ScriptId
 import repository.admin.AdminRepository
 import script.base.ScriptHandler
-import script.base.config.ConfigBlockId
 import script.base.config.Configurable
+import script.base.config.block.ConfigBlockId
 import util.slack.block.headerSection
 import util.slack.block.markdownSection
 import util.slack.user.SlackUser

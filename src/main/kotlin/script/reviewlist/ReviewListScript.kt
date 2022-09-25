@@ -6,9 +6,9 @@ import com.slack.api.bolt.request.builtin.SlashCommandRequest
 import model.command.CommandId
 import model.script.ScriptId
 import script.base.CommandScript
-import script.base.config.ConfigBlockId
-import script.base.config.ConfigBlockText
 import script.base.config.Configurable
+import script.base.config.block.ConfigBlockId
+import script.base.config.block.ConfigBlockText
 import util.logger.getLogger
 import util.slack.block.markdownSection
 import util.slack.user.SlackUser
