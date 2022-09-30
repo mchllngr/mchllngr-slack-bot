@@ -1,0 +1,20 @@
+selectAbsenceApiKey:
+SELECT absenceApiKey
+FROM reviewList
+WHERE id = 0;
+
+updateAbsenceApiKey:
+UPDATE reviewList
+SET absenceApiKey = ?
+WHERE id = 0;
+
+selectUsers:
+SELECT userId
+FROM reviewListUser;
+
+insertUser:
+INSERT IGNORE INTO reviewListUser(userId)
+VALUES (?);
+
+deleteUsers:
+DELETE FROM reviewListUser;

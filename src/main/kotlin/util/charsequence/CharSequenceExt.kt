@@ -12,3 +12,5 @@ fun <T : CharSequence> Iterable<T>.joinToString(
     val last = list.removeLast()
     return list.joinToString(separator = separator) + lastSeparator + last
 }
+
+fun CharSequence?.mask(): String? = if (isNullOrEmpty()) null else "********"
