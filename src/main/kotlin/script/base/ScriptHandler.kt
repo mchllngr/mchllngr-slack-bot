@@ -110,8 +110,11 @@ class ScriptHandler(
         forEach { script ->
             script.commandIds.forEach { id ->
                 val scriptsForId = commandIdToScript[id]
-                if (scriptsForId == null) commandIdToScript[id] = mutableListOf(script)
-                else scriptsForId += script
+                if (scriptsForId == null) {
+                    commandIdToScript[id] = mutableListOf(script)
+                } else {
+                    scriptsForId += script
+                }
             }
         }
         return commandIdToScript
@@ -177,8 +180,11 @@ class ScriptHandler(
         forEach { script ->
             script.blockActionIds.forEach { id ->
                 val scriptsForId = blockActionIdToScript[id]
-                if (scriptsForId == null) blockActionIdToScript[id] = mutableListOf(script)
-                else scriptsForId += script
+                if (scriptsForId == null) {
+                    blockActionIdToScript[id] = mutableListOf(script)
+                } else {
+                    scriptsForId += script
+                }
             }
         }
         return blockActionIdToScript
