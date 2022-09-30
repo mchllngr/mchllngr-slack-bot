@@ -1,6 +1,7 @@
 // ktlint-disable filename
 
 import script.home.HomeScript
+import script.reviewlist.ReviewListScript
 import servicelocator.ServiceLocator.config
 import servicelocator.ServiceLocator.dataStore
 import util.debug.DebugMode
@@ -13,5 +14,6 @@ fun main() {
 
     SlackBot.start {
         addScript(HomeScript())
+        addScript(ReviewListScript())
     }
 }

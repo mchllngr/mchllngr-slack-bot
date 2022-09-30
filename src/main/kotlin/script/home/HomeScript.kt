@@ -19,6 +19,7 @@ import script.home.block.BirthdayBlocks
 import script.home.block.BirthdayReminderBlocks
 import script.home.block.FooterBlocks
 import script.home.block.HelloBlocks
+import script.home.block.ScriptConfigBlocks
 import script.home.block.TeamBlocks
 import script.home.block.UserDataBlocks
 import servicelocator.ServiceLocator.adminRepo
@@ -30,7 +31,6 @@ import util.slack.user.SlackUser
 import util.time.getZoneDateTimeFromSlackUser
 import java.time.ZonedDateTime
 
-@OptIn(ExperimentalStdlibApi::class)
 class HomeScript : AppHomeOpenedScript, BlockActionScript {
 
     private val helloBlocks by lazy { HelloBlocks() }
@@ -39,21 +39,25 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
     private val birthdayReminderBlocks by lazy { BirthdayReminderBlocks(userRepo) }
     private val userDataBlocks by lazy { UserDataBlocks() }
     private val adminBlocks by lazy { AdminBlocks(adminRepo, scriptHandler) }
+    private val scriptConfigBlocks by lazy { ScriptConfigBlocks(adminRepo, scriptHandler) }
     private val footerBlocks by lazy { FooterBlocks() }
 
     override val id = ID
 
-    override val blockActionIds = listOf(
-        BirthdayBlocks.BLOCK_ACTION_ID_BIRTHDAY_CHANGED,
-        BirthdayBlocks.BLOCK_ACTION_ID_BIRTHDAY_INCLUDE_YEAR_CHANGED,
-        BirthdayBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMOVED,
-        BirthdayReminderBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ENABLED_CHANGED,
-        BirthdayReminderBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ADD_ADDITIONAL_SELECTED,
-        UserDataBlocks.BLOCK_ACTION_ID_USER_DATA_SHOW_SELECTED,
-        UserDataBlocks.BLOCK_ACTION_ID_USER_DATA_REMOVE_ALL_SELECTED,
-        AdminBlocks.BLOCK_ACTION_ID_BOT_ENABLED_SELECTED,
-        AdminBlocks.BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED
-    )
+    override val blockActionIds: List<BlockActionId> by lazy {
+        buildList {
+            this += BirthdayBlocks.BLOCK_ACTION_ID_BIRTHDAY_CHANGED
+            this += BirthdayBlocks.BLOCK_ACTION_ID_BIRTHDAY_INCLUDE_YEAR_CHANGED
+            this += BirthdayBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMOVED
+            this += BirthdayReminderBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ENABLED_CHANGED
+            this += BirthdayReminderBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ADD_ADDITIONAL_SELECTED
+            this += UserDataBlocks.BLOCK_ACTION_ID_USER_DATA_SHOW_SELECTED
+            this += UserDataBlocks.BLOCK_ACTION_ID_USER_DATA_REMOVE_ALL_SELECTED
+            this += AdminBlocks.BLOCK_ACTION_ID_BOT_ENABLED_SELECTED
+            this += AdminBlocks.BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED
+            this += scriptConfigBlocks.blockActionIds
+        }
+    }
 
     override fun onAppHomeOpenedEvent(
         event: EventsApiPayload<AppHomeOpenedEvent>,
@@ -79,6 +83,7 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
                 BirthdayReminderBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ENABLED_CHANGED -> birthdayReminderBlocks.onActionBirthdayReminderEnabledChanged(user, request)
                 AdminBlocks.BLOCK_ACTION_ID_BOT_ENABLED_SELECTED -> adminBlocks.onActionBotEnabledSelected(user, request)
                 AdminBlocks.BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED -> adminBlocks.onActionScriptEnabledSelected(user, request)
+                in scriptConfigBlocks.blockActionIds -> scriptConfigBlocks.onBlockActionEvent(user, request)
                 else -> Unit
             }
         }
@@ -137,6 +142,11 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
 //            add(divider())
 
             slackUser?.let { adminBlocks.createBlocks(slackUser) }?.let { blocks ->
+                addAll(blocks)
+                add(divider())
+            }
+
+            slackUser?.let { scriptConfigBlocks.createBlocks(slackUser) }?.let { blocks ->
                 addAll(blocks)
                 add(divider())
             }

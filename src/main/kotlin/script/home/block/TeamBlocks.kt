@@ -5,6 +5,7 @@ import com.slack.api.model.block.LayoutBlock
 import com.slack.api.model.block.composition.BlockCompositions.markdownText
 import db.Team
 import model.user.UserId
+import model.user.usernameString
 import repository.team.TeamRepository
 import util.charsequence.joinToString
 import util.slack.block.headerSection
@@ -16,7 +17,6 @@ class TeamBlocks(
     private val teamRepo: TeamRepository
 ) {
 
-    @OptIn(ExperimentalStdlibApi::class)
     fun createBlocks(
         slackUser: SlackUser
     ): List<LayoutBlock> = buildList {
@@ -33,18 +33,20 @@ class TeamBlocks(
     }
 
     private fun getTeamsTitle(teamsForUser: List<Team>): String {
-        val teamNames = teamsForUser.map { it.name }
-        return if (teamNames.size == 1) "Du gehörst dem Team *${teamNames.first()}* an."
-        else "Du gehörst den Teams *${teamNames.joinToString(separator = ", ", lastSeparator = " und ")}* an."
+        val teamNames = teamsForUser.map { "*${it.name}*" }
+        return if (teamNames.size == 1) {
+            "Du gehörst dem Team ${teamNames.first()} an."
+        } else {
+            "Du gehörst den Teams ${teamNames.joinToString(separator = ", ", lastSeparator = " und ")} an."
+        }
     }
 
-    @OptIn(ExperimentalStdlibApi::class)
     fun getTeamBlocks(teamsForUser: List<Team>): List<LayoutBlock> = buildList {
         teamsForUser.forEach { team ->
             this += markdownSection("Teammitglieder *${team.name}*:")
 
             val usersInTeam = teamRepo.getUsersForTeam(team.id)
-                .map { user -> markdownText("<@${user.id.id}> ${if (user.admin) " *(Teamadmin)*" else ""}") }
+                .map { user -> markdownText("${user.id.usernameString} ${if (user.admin) " *(Teamadmin)*" else ""}") }
             this += section { it.fields(usersInTeam) }
         }
     }

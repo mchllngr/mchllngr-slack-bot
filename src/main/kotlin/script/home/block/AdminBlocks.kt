@@ -23,7 +23,6 @@ class AdminBlocks(
     private val scriptHandler: ScriptHandler
 ) {
 
-    @OptIn(ExperimentalStdlibApi::class)
     fun createBlocks(
         slackUser: SlackUser
     ): List<LayoutBlock>? {
@@ -111,7 +110,7 @@ class AdminBlocks(
         return if (scriptId != null && enabled != null) ScriptEnabledAction(scriptId, enabled) else null
     }
 
-    data class ScriptEnabledAction(
+    private data class ScriptEnabledAction(
         val id: ScriptId,
         val enabled: Boolean
     )
