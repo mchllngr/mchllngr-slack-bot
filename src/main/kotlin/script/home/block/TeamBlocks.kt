@@ -34,8 +34,11 @@ class TeamBlocks(
 
     private fun getTeamsTitle(teamsForUser: List<Team>): String {
         val teamNames = teamsForUser.map { "*${it.name}*" }
-        return if (teamNames.size == 1) "Du gehörst dem Team ${teamNames.first()} an."
-        else "Du gehörst den Teams ${teamNames.joinToString(separator = ", ", lastSeparator = " und ")} an."
+        return if (teamNames.size == 1) {
+            "Du gehörst dem Team ${teamNames.first()} an."
+        } else {
+            "Du gehörst den Teams ${teamNames.joinToString(separator = ", ", lastSeparator = " und ")} an."
+        }
     }
 
     fun getTeamBlocks(teamsForUser: List<Team>): List<LayoutBlock> = buildList {

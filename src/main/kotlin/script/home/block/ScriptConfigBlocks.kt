@@ -49,7 +49,6 @@ class ScriptConfigBlocks(
                 this += markdownSection("Skript *${id.id}*")
                 this += script.getConfigBlocks().map { it.getLayoutBlock() }
             }
-
         }
     }
 
