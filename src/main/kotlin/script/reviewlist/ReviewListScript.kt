@@ -11,11 +11,14 @@ import script.base.config.block.ConfigBlockId
 import script.base.config.block.ConfigBlockMultiUsersSelect
 import script.base.config.block.ConfigBlockResponse
 import script.base.config.block.ConfigBlockText
-import util.logger.getLogger
+import servicelocator.ServiceLocator.reviewListRepo
+import util.charsequence.mask
 import util.slack.block.markdownSection
 import util.slack.user.SlackUser
 
 class ReviewListScript : CommandScript, Configurable {
+
+    private val repo by lazy { reviewListRepo }
 
     override val id = ID
 
@@ -48,13 +51,14 @@ class ReviewListScript : CommandScript, Configurable {
             scriptId = id,
             id = CONFIG_ACTION_ID_ABSENCE_API_KEY,
             label = "absence.io API Key",
-            placeholder = "API Key"
+            placeholder = repo.absenceApiKey.mask() ?: "API Key"
         ),
         ConfigBlockMultiUsersSelect(
             scriptId = id,
             id = CONFIG_ACTION_ID_USER_LIST,
-            label = "User List",
-            placeholder = "Some Placeholder"
+            label = "ReviewList Users",
+            placeholder = "Users",
+            initialUsers = repo.users
         )
     )
 
@@ -64,10 +68,11 @@ class ReviewListScript : CommandScript, Configurable {
     ) {
         when {
             response.configBlockId == CONFIG_ACTION_ID_ABSENCE_API_KEY && response is ConfigBlockResponse.Text -> {
-                getLogger().debug("handle ${CONFIG_ACTION_ID_ABSENCE_API_KEY.id}") // TODO
+                repo.absenceApiKey = response.value
             }
+
             response.configBlockId == CONFIG_ACTION_ID_USER_LIST && response is ConfigBlockResponse.MultiUsersSelect -> {
-                getLogger().debug("handle ${CONFIG_ACTION_ID_USER_LIST.id}") // TODO
+                repo.users = response.value
             }
         }
     }

@@ -5,7 +5,7 @@ import model.script.ScriptId
 import model.user.UserId
 import script.base.config.block.ConfigBlock.Companion.extractScriptIdAndConfigBlockIdFromBlockId
 
-sealed interface ConfigBlockResponse<T : Any> {
+sealed interface ConfigBlockResponse<T> {
 
     val scriptId: ScriptId
     val configBlockId: ConfigBlockId
@@ -14,8 +14,8 @@ sealed interface ConfigBlockResponse<T : Any> {
     data class Text(
         override val scriptId: ScriptId,
         override val configBlockId: ConfigBlockId,
-        override val value: String
-    ) : ConfigBlockResponse<String>
+        override val value: String?
+    ) : ConfigBlockResponse<String?>
 
     data class MultiUsersSelect(
         override val scriptId: ScriptId,

@@ -5,6 +5,7 @@ import factory.DatabaseFactory
 import factory.SqlDriverFactory
 import model.config.Config
 import repository.admin.AdminRepository
+import repository.reviewlist.ReviewListRepository
 import repository.script.ScriptRepository
 import repository.team.TeamRepository
 import repository.user.UserRepository
@@ -29,4 +30,6 @@ object ServiceLocator {
     val userRepo by lazy { UserRepository.create(dataStore) }
 
     val teamRepo by lazy { TeamRepository.create(dataStore) }
+
+    val reviewListRepo by lazy { ReviewListRepository.create(dataStore) }
 }

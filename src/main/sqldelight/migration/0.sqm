@@ -6,6 +6,8 @@ import model.user.UserId;
 
 -- drop tables
 DROP TABLE IF EXISTS databaseVersion;
+DROP TABLE IF EXISTS reviewListUser;
+DROP TABLE IF EXISTS reviewList;
 DROP TABLE IF EXISTS teamUser;
 DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS team;
@@ -55,6 +57,21 @@ CREATE TABLE teamUser(
     admin BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT fk_teamuser_team_id FOREIGN KEY (teamId) REFERENCES team(id) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT fk_teamuser_user_id FOREIGN KEY (userId) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- reviewList
+CREATE TABLE reviewList(
+    id INTEGER NOT NULL PRIMARY KEY,
+    absenceApiKey VARCHAR(256)
+);
+
+INSERT INTO reviewList(id, absenceApiKey)
+VALUES (0, NULL);
+
+-- reviewListUser
+CREATE TABLE reviewListUser(
+    userId VARCHAR(256) AS UserId NOT NULL PRIMARY KEY,
+    CONSTRAINT fk_reviewlistuser_user_id FOREIGN KEY (userId) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- database_version
