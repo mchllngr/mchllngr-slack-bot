@@ -2,8 +2,6 @@ package repository.reviewlist
 
 import datastore.DataStore
 import model.user.UserId
-import repository.user.UserRepository
-import repository.user.UserRepositoryImpl
 
 interface ReviewListRepository {
 
