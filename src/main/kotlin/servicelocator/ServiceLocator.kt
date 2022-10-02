@@ -10,8 +10,11 @@ import repository.script.ScriptRepository
 import repository.team.TeamRepository
 import repository.user.UserRepository
 import script.base.ScriptHandler
+import kotlin.random.Random
 
 object ServiceLocator {
+
+    val random = Random(System.currentTimeMillis())
 
     val config by lazy { Config.create() }
 

@@ -10,3 +10,5 @@ typealias SlackUser = User
 val SlackUser?.isBotAdmin get() = this != null && UserId(id) in config.admin.ids
 
 val SlackUser.tzId: ZoneId get() = ZoneId.of(tz)
+
+val SlackUser.usernameString get() = "<@$id>"
