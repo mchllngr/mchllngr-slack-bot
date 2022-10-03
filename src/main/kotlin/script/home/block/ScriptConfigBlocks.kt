@@ -3,6 +3,7 @@ package script.home.block
 import com.slack.api.bolt.context.Context
 import com.slack.api.bolt.context.builtin.ActionContext
 import com.slack.api.bolt.request.builtin.BlockActionRequest
+import com.slack.api.bolt.request.builtin.ViewSubmissionRequest
 import com.slack.api.model.block.Blocks.actions
 import com.slack.api.model.block.LayoutBlock
 import com.slack.api.model.block.composition.BlockCompositions.plainText
@@ -13,6 +14,7 @@ import com.slack.api.model.view.ViewTitle
 import com.slack.api.model.view.Views.view
 import model.blockaction.BlockActionId
 import model.script.ScriptId
+import model.view.submission.ViewSubmissionId
 import repository.admin.AdminRepository
 import script.base.ScriptHandler
 import script.base.config.Configurable
@@ -35,21 +37,14 @@ class ScriptConfigBlocks(
             .filterValues { it is Configurable }
             .mapValues { it.value as Configurable }
     }
-    private val scriptConfigIds by lazy {
-        configurableScripts.map { (scriptId, _) -> scriptId.configId }
-    }
 
-    val blockActionIds by lazy {
-        buildList {
-            configurableScripts.forEach { (scriptId, script) ->
-                val blocks = script.getConfigBlocks()
-                if (blocks.isEmpty()) return@forEach
-
-                this += BlockActionId.User.Str(scriptId.configId)
-                blocks.forEach { this += BlockActionId.User.Str(it.actionId) }
-            }
-        }
-    }
+//    val viewSubmissionIds by lazy {
+//        configurableScripts.flatMap { script ->
+//            script.value
+//                .getConfigBlocks()
+//                .map { ViewSubmissionId.User.Str(it.actionId) }
+//        }
+//    }
 
     fun createBlocks(
         slackUser: SlackUser
@@ -77,58 +72,22 @@ class ScriptConfigBlocks(
     }
 
     fun onBlockActionEvent(
-        user: SlackUser,
         request: BlockActionRequest,
         ctx: ActionContext
     ) {
-        when (val response = request.getResponse()) {
-            is BlockActionResponse.ScriptConfigButtonClicked -> handleScriptConfigButtonClicked(response, ctx)
-            is BlockActionResponse.ScriptConfigSaved -> handleScriptConfigSaved(user, response)
-            null -> Unit // ignore
-        }
-    }
+        val response = request.getBlockActionResponse() ?: return
 
-    private fun BlockActionRequest.getResponse(): BlockActionResponse? {
-        val actions = payload.actions.filterNotNull()
-        if (actions.isEmpty()) return null
-
-        actions.firstOrNull()?.actionId?.let { actionId ->
-            if (actionId in scriptConfigIds) return BlockActionResponse.ScriptConfigButtonClicked(actionId, payload.triggerId)
-        }
-
-        return BlockActionResponse.ScriptConfigSaved(actions.map { ConfigBlockResponse.from(it) })
-    }
-
-    private fun handleScriptConfigButtonClicked(
-        response: BlockActionResponse.ScriptConfigButtonClicked,
-        ctx: ActionContext
-    ) {
         val scriptId = response.scriptConfigId.substring(SCRIPT_CONFIG_ID_PREFIX.length).let { ScriptId(it) }
         val script = configurableScripts[scriptId] ?: return
 
         ctx.showScriptConfigModal(scriptId, script, response.triggerId)
     }
 
-    private fun handleScriptConfigSaved(
-        user: SlackUser,
-        response: BlockActionResponse.ScriptConfigSaved
-    ) {
-        response.values.forEach { value ->
-            configurableScripts
-                .filter { (scriptId, script) -> scriptId == value.scriptId && value.configBlockId in script.configBlockIds }
-                .forEach { (_, script) ->
-                    logger.debug(
-                        """Config changes:
-                        |    ScriptId: ${value.scriptId.id}
-                        |    User: ${user.id}
-                        |    ConfigBlockId: ${value.configBlockId.id}
-                        |    New value: ${value.value}
-                        """.trimMargin()
-                    )
-                    script.onConfigChange(user, value)
-                }
-        }
-    }
+    private fun BlockActionRequest.getBlockActionResponse() = payload.actions
+        .filterNotNull()
+        .firstOrNull()
+        ?.actionId
+        ?.let { ScriptConfigButtonClickedResponse(it, payload.triggerId) }
 
     private fun Context.showScriptConfigModal(
         scriptId: ScriptId,
@@ -173,20 +132,63 @@ class ScriptConfigBlocks(
         }
     }
 
+    fun onViewSubmissionEvent(
+        user: SlackUser,
+        request: ViewSubmissionRequest
+    ) {
+        val response = request.getViewSubmissionResponse() ?: return
+        onScriptConfigChanges(user, response)
+    }
+
+    private fun ViewSubmissionRequest.getViewSubmissionResponse(): ScriptConfigSavedResponse? {
+        // #32 improve receiving script config changes made in modal
+
+        val responses = payload.view?.state?.values
+            ?.mapNotNull {
+                val blockId = it.key ?: return@mapNotNull null
+                val value = it.value.values.firstOrNull() ?: return@mapNotNull null
+                return@mapNotNull blockId to value
+            }
+            ?.map { (blockId, value) -> ConfigBlockResponse.from(blockId, value) }
+            ?: return null
+
+        return ScriptConfigSavedResponse(responses)
+    }
+
+    private fun onScriptConfigChanges(
+        user: SlackUser,
+        response: ScriptConfigSavedResponse
+    ) {
+        response.values.forEach { value ->
+            configurableScripts
+                .filter { (scriptId, script) -> scriptId == value.scriptId && value.configBlockId in script.configBlockIds }
+                .forEach { (_, script) ->
+                    logger.debug(
+                        """Config changes:
+                        |    ScriptId: ${value.scriptId.id}
+                        |    User: ${user.id}
+                        |    ConfigBlockId: ${value.configBlockId.id}
+                        |    New value: ${value.value}
+                        """.trimMargin()
+                    )
+                    script.onConfigChange(user, value)
+                }
+        }
+    }
+
     private val ScriptId.configId get() = "${SCRIPT_CONFIG_ID_PREFIX}$id"
 
-    private sealed interface BlockActionResponse {
+    data class ScriptConfigButtonClickedResponse(
+        val scriptConfigId: String,
+        val triggerId: String
+    )
 
-        data class ScriptConfigButtonClicked(
-            val scriptConfigId: String,
-            val triggerId: String
-        ) : BlockActionResponse
-
-        data class ScriptConfigSaved(val values: List<ConfigBlockResponse<*>>) : BlockActionResponse
-    }
+    data class ScriptConfigSavedResponse(val values: List<ConfigBlockResponse<*>>)
 
     companion object {
 
         private const val SCRIPT_CONFIG_ID_PREFIX = "SCRIPT_CONFIG_"
+        val BLOCK_ACTION_SCRIPT_CONFIG_ID = BlockActionId.User.Regex("^$SCRIPT_CONFIG_ID_PREFIX.+$".toRegex())
+        val VIEW_SUBMISSION_SCRIPT_CONFIG_ID = ViewSubmissionId.User.Regex("^$SCRIPT_CONFIG_ID_PREFIX.+$".toRegex())
     }
 }
