@@ -40,7 +40,6 @@ data class ConfigBlockMultiUsersSelect(
         input.blockId(blockId)
         input.label(label)
         input.hint(hint)
-        input.dispatchAction(true)
         input.element(
             multiUsersSelect { multiUsersSelect ->
                 multiUsersSelect.actionId(actionId)

@@ -6,7 +6,6 @@ import com.slack.api.model.block.composition.BlockCompositions.plainText
 import com.slack.api.model.block.composition.PlainTextObject
 import com.slack.api.model.block.element.BlockElements.plainTextInput
 import model.script.ScriptId
-import com.slack.api.model.block.composition.DispatchActionConfig as SlackDispatchActionConfig
 
 data class ConfigBlockText(
     private val scriptId: ScriptId,
@@ -17,8 +16,7 @@ data class ConfigBlockText(
     private val initialValue: String? = null,
     private val multiline: Boolean = false,
     private val minLength: Int? = null,
-    private val maxLength: Int? = null,
-    private val dispatchActionConfig: DispatchActionConfig = DispatchActionConfig.ON_ENTER_PRESSED
+    private val maxLength: Int? = null
 ) : ConfigBlock(scriptId, id) {
 
     constructor(
@@ -30,8 +28,7 @@ data class ConfigBlockText(
         initialValue: String? = null,
         multiline: Boolean = false,
         minLength: Int? = null,
-        maxLength: Int? = null,
-        dispatchActionConfig: DispatchActionConfig = DispatchActionConfig.ON_ENTER_PRESSED
+        maxLength: Int? = null
     ) : this(
         scriptId = scriptId,
         id = id,
@@ -41,15 +38,13 @@ data class ConfigBlockText(
         initialValue = initialValue,
         multiline = multiline,
         minLength = minLength,
-        maxLength = maxLength,
-        dispatchActionConfig = dispatchActionConfig
+        maxLength = maxLength
     )
 
     override fun getLayoutBlock(): LayoutBlock = input { input ->
         input.blockId(blockId)
         input.label(label)
         input.hint(hint)
-        input.dispatchAction(true)
         input.element(
             plainTextInput { textInput ->
                 textInput.actionId(actionId)
@@ -58,14 +53,7 @@ data class ConfigBlockText(
                 textInput.multiline(multiline)
                 textInput.minLength(minLength)
                 textInput.maxLength(maxLength)
-                textInput.dispatchActionConfig(dispatchActionConfig.config)
             }
         )
-    }
-
-    enum class DispatchActionConfig(val config: SlackDispatchActionConfig) {
-        ON_ENTER_PRESSED(SlackDispatchActionConfig(listOf("on_enter_pressed"))),
-        ON_CHARACTER_ENTERED(SlackDispatchActionConfig(listOf("on_character_entered"))),
-        ON_ENTER_PRESSED_OR_CHARACTER_ENTERED(SlackDispatchActionConfig(listOf("on_enter_pressed", "on_character_entered")))
     }
 }

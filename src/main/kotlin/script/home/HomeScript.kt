@@ -83,7 +83,7 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
                 BirthdayReminderBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ENABLED_CHANGED -> birthdayReminderBlocks.onActionBirthdayReminderEnabledChanged(user, request)
                 AdminBlocks.BLOCK_ACTION_ID_BOT_ENABLED_SELECTED -> adminBlocks.onActionBotEnabledSelected(user, request)
                 AdminBlocks.BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED -> adminBlocks.onActionScriptEnabledSelected(user, request)
-                in scriptConfigBlocks.blockActionIds -> scriptConfigBlocks.onBlockActionEvent(user, request)
+                in scriptConfigBlocks.blockActionIds -> scriptConfigBlocks.onBlockActionEvent(user, request, ctx)
                 else -> Unit
             }
         }
