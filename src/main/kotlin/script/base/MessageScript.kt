@@ -6,6 +6,8 @@ import com.slack.api.model.event.MessageEvent
 
 interface MessageScript : Script {
 
+    // #31 allow setting a String or Regex to filter wanted messages
+
     fun onMessageEvent(
         event: EventsApiPayload<MessageEvent>,
         ctx: EventContext

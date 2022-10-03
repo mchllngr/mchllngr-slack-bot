@@ -3,12 +3,14 @@ package script.base
 import com.slack.api.bolt.App
 import com.slack.api.bolt.handler.builtin.BlockActionHandler
 import com.slack.api.bolt.handler.builtin.SlashCommandHandler
+import com.slack.api.bolt.handler.builtin.ViewSubmissionHandler
 import com.slack.api.model.event.AppHomeOpenedEvent
 import com.slack.api.model.event.MessageEvent
 import model.blockaction.BlockActionId
 import model.command.CommandId
 import model.script.ScriptId
 import model.user.UserId
+import model.view.submission.ViewSubmissionId
 import repository.admin.AdminRepository
 import script.home.HomeScript
 import util.slack.context.getUser
@@ -39,6 +41,7 @@ class ScriptHandler(
             registerMessageScripts()
             registerCommandScripts()
             registerBlockActionScripts()
+            registerViewSubmissionScripts()
         }
 
         scripts.values.forEach { script ->
@@ -225,6 +228,76 @@ class ScriptHandler(
         when (blockActionId) {
             is BlockActionId.Admin.Str -> blockAction(blockActionId.id, handler)
             is BlockActionId.Admin.Regex -> blockAction(blockActionId.idRegex.toPattern(), handler)
+        }
+    }
+
+    // endregion
+
+    // region ViewSubmissionScripts
+
+    private fun App.registerViewSubmissionScripts() {
+        val viewSubmissionScripts = scripts.values.filterIsInstance<ViewSubmissionScript>()
+        val viewSubmissionIdToScript = viewSubmissionScripts.toMapOfViewSubmissionIdToScripts()
+
+        viewSubmissionIdToScript
+            .forEach { (viewSubmissionId, scripts) ->
+                when (viewSubmissionId) {
+                    is ViewSubmissionId.User -> registerUserViewSubmissionScripts(viewSubmissionId, scripts)
+                    is ViewSubmissionId.Admin -> registerAdminViewSubmissionScripts(viewSubmissionId, scripts)
+                }
+            }
+    }
+
+    private fun List<ViewSubmissionScript>.toMapOfViewSubmissionIdToScripts(): Map<ViewSubmissionId, List<ViewSubmissionScript>> {
+        val viewSubmissionIdToScript = mutableMapOf<ViewSubmissionId, MutableList<ViewSubmissionScript>>()
+        forEach { script ->
+            script.viewSubmissionIds.forEach { id ->
+                val scriptsForId = viewSubmissionIdToScript[id]
+                if (scriptsForId == null) {
+                    viewSubmissionIdToScript[id] = mutableListOf(script)
+                } else {
+                    scriptsForId += script
+                }
+            }
+        }
+        return viewSubmissionIdToScript
+    }
+
+    private fun App.registerUserViewSubmissionScripts(
+        viewSubmissionId: ViewSubmissionId.User,
+        scripts: List<ViewSubmissionScript>
+    ) {
+        val handler = ViewSubmissionHandler { request, ctx ->
+            if (!adminRepo.isBotEnabled()) return@ViewSubmissionHandler ctx.ack()
+
+            scripts
+                .filter { adminRepo.isScriptEnabled(it.id) } // #14 improve performance when checking if scripts are enabled
+                .forEach { it.onViewSubmissionEvent(viewSubmissionId, request, ctx) }
+
+            ctx.ack()
+        }
+
+        when (viewSubmissionId) {
+            is ViewSubmissionId.User.Str -> viewSubmission(viewSubmissionId.id, handler)
+            is ViewSubmissionId.User.Regex -> viewSubmission(viewSubmissionId.idRegex.toPattern(), handler)
+        }
+    }
+
+    private fun App.registerAdminViewSubmissionScripts(
+        viewSubmissionId: ViewSubmissionId.Admin,
+        scripts: List<ViewSubmissionScript>
+    ) {
+        val handler = ViewSubmissionHandler { request, ctx ->
+            if (!ctx.getUser(request).isBotAdmin) return@ViewSubmissionHandler ctx.ack()
+
+            scripts.forEach { it.onViewSubmissionEvent(viewSubmissionId, request, ctx) }
+
+            ctx.ack()
+        }
+
+        when (viewSubmissionId) {
+            is ViewSubmissionId.Admin.Str -> viewSubmission(viewSubmissionId.id, handler)
+            is ViewSubmissionId.Admin.Regex -> viewSubmission(viewSubmissionId.idRegex.toPattern(), handler)
         }
     }
 

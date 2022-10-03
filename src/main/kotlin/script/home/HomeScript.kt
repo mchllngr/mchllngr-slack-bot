@@ -4,7 +4,9 @@ import com.slack.api.app_backend.events.payload.EventsApiPayload
 import com.slack.api.bolt.context.Context
 import com.slack.api.bolt.context.builtin.ActionContext
 import com.slack.api.bolt.context.builtin.EventContext
+import com.slack.api.bolt.context.builtin.ViewSubmissionContext
 import com.slack.api.bolt.request.builtin.BlockActionRequest
+import com.slack.api.bolt.request.builtin.ViewSubmissionRequest
 import com.slack.api.model.block.Blocks.divider
 import com.slack.api.model.block.LayoutBlock
 import com.slack.api.model.event.AppHomeOpenedEvent
@@ -12,8 +14,10 @@ import com.slack.api.model.view.Views.view
 import model.blockaction.BlockActionId
 import model.script.ScriptId
 import model.user.UserId
+import model.view.submission.ViewSubmissionId
 import script.base.AppHomeOpenedScript
 import script.base.BlockActionScript
+import script.base.ViewSubmissionScript
 import script.home.block.AdminBlocks
 import script.home.block.BirthdayBlocks
 import script.home.block.BirthdayReminderBlocks
@@ -31,7 +35,7 @@ import util.slack.user.SlackUser
 import util.time.getZoneDateTimeFromSlackUser
 import java.time.ZonedDateTime
 
-class HomeScript : AppHomeOpenedScript, BlockActionScript {
+class HomeScript : AppHomeOpenedScript, BlockActionScript, ViewSubmissionScript {
 
     private val helloBlocks by lazy { HelloBlocks() }
     private val teamBlocks by lazy { TeamBlocks(teamRepo) }
@@ -44,20 +48,22 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
 
     override val id = ID
 
-    override val blockActionIds: List<BlockActionId> by lazy {
-        buildList {
-            this += BirthdayBlocks.BLOCK_ACTION_ID_BIRTHDAY_CHANGED
-            this += BirthdayBlocks.BLOCK_ACTION_ID_BIRTHDAY_INCLUDE_YEAR_CHANGED
-            this += BirthdayBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMOVED
-            this += BirthdayReminderBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ENABLED_CHANGED
-            this += BirthdayReminderBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ADD_ADDITIONAL_SELECTED
-            this += UserDataBlocks.BLOCK_ACTION_ID_USER_DATA_SHOW_SELECTED
-            this += UserDataBlocks.BLOCK_ACTION_ID_USER_DATA_REMOVE_ALL_SELECTED
-            this += AdminBlocks.BLOCK_ACTION_ID_BOT_ENABLED_SELECTED
-            this += AdminBlocks.BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED
-            this += scriptConfigBlocks.blockActionIds
-        }
-    }
+    override val blockActionIds = listOf(
+        BirthdayBlocks.BLOCK_ACTION_ID_BIRTHDAY_CHANGED,
+        BirthdayBlocks.BLOCK_ACTION_ID_BIRTHDAY_INCLUDE_YEAR_CHANGED,
+        BirthdayBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMOVED,
+        BirthdayReminderBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ENABLED_CHANGED,
+        BirthdayReminderBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ADD_ADDITIONAL_SELECTED,
+        UserDataBlocks.BLOCK_ACTION_ID_USER_DATA_SHOW_SELECTED,
+        UserDataBlocks.BLOCK_ACTION_ID_USER_DATA_REMOVE_ALL_SELECTED,
+        AdminBlocks.BLOCK_ACTION_ID_BOT_ENABLED_SELECTED,
+        AdminBlocks.BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED,
+        ScriptConfigBlocks.BLOCK_ACTION_SCRIPT_CONFIG_ID
+    )
+
+    override val viewSubmissionIds = listOf(
+        ScriptConfigBlocks.VIEW_SUBMISSION_SCRIPT_CONFIG_ID
+    )
 
     override fun onAppHomeOpenedEvent(
         event: EventsApiPayload<AppHomeOpenedEvent>,
@@ -83,7 +89,25 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript {
                 BirthdayReminderBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ENABLED_CHANGED -> birthdayReminderBlocks.onActionBirthdayReminderEnabledChanged(user, request)
                 AdminBlocks.BLOCK_ACTION_ID_BOT_ENABLED_SELECTED -> adminBlocks.onActionBotEnabledSelected(user, request)
                 AdminBlocks.BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED -> adminBlocks.onActionScriptEnabledSelected(user, request)
-                in scriptConfigBlocks.blockActionIds -> scriptConfigBlocks.onBlockActionEvent(user, request)
+                ScriptConfigBlocks.BLOCK_ACTION_SCRIPT_CONFIG_ID -> scriptConfigBlocks.onBlockActionEvent(request, ctx)
+                else -> Unit
+            }
+        }
+
+        ctx.updateHomeView(
+            UserId(request.payload.user.id),
+            request.payload.view.hash
+        )
+    }
+
+    override fun onViewSubmissionEvent(
+        viewSubmissionId: ViewSubmissionId,
+        request: ViewSubmissionRequest,
+        ctx: ViewSubmissionContext
+    ) {
+        ctx.getUser(request)?.let { user ->
+            when (viewSubmissionId) {
+                ScriptConfigBlocks.VIEW_SUBMISSION_SCRIPT_CONFIG_ID -> scriptConfigBlocks.onViewSubmissionEvent(user, request)
                 else -> Unit
             }
         }
