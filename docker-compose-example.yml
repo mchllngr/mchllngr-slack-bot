@@ -23,8 +23,8 @@ services:
     restart: always
     volumes:
       - SOME_VOLUME:/var/lib/mysql
-    expose:
-      - "SOME_PORT"
+    ports:
+      - "SOME_PORT:3306"
     environment:
       MARIADB_ROOT_PASSWORD: SOME_ROOT_PASSWORD
       MARIADB_DATABASE: SOME_DATABASE
