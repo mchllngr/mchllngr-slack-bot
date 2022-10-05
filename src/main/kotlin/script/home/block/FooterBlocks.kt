@@ -25,6 +25,7 @@ class FooterBlocks {
             .joinToString(separator = ", ", lastSeparator = " oder ")
 
         val helpText = buildString {
+            append("TEEEEST")
             append(":information_source: Für Fragen und Verbesserungsvorschläge zum Bot erstelle bitte ein ")
             append("<https://github.com/mchllngr/mchllngr-slack-bot/issues|Issue>")
             if (admins.isNotBlank()) {
