@@ -22,7 +22,7 @@ services:
     image: mariadb:10.9
     restart: always
     volumes:
-      - SOME_VOLUME:/var/lib/mysql
+      - slack-bot-db:/var/lib/mysql
     ports:
       - "SOME_PORT:3306"
     environment:
@@ -34,5 +34,4 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
 
 volumes:
-  SOME_VOLUME:
-    external: true
+  slack-bot-db:
