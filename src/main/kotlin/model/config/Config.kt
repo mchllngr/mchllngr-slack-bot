@@ -1,14 +1,21 @@
 package model.config
 
+import buildconfig.BuildConfig
 import exception.MandatoryEnvironmentVariableMissingException
 import model.user.UserId
 
 data class Config(
+    val buildInfo: BuildInfo,
     val debugMode: Boolean,
     val token: Token,
     val database: Database,
     val admin: Admin
 ) {
+
+    data class BuildInfo(
+        val version: String,
+        val commitHash: String
+    )
 
     data class Token(
         val bot: String,
@@ -30,6 +37,10 @@ data class Config(
         private const val ADMIN_IDS_SEPARATOR = ","
 
         fun create() = Config(
+            BuildInfo(
+                version = BuildConfig.VERSION,
+                commitHash = BuildConfig.COMMIT_HASH.take(7)
+            ),
             System.getenv("DEBUG_MODE").equals("true", true),
             Token(
                 System.getenv("SLACK_BOT_TOKEN") ?: envVarMissing("SLACK_BOT_TOKEN"),
