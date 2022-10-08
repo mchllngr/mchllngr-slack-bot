@@ -66,12 +66,14 @@ class ReviewListScript : CommandScript, Configurable {
             scriptId = id,
             id = CONFIG_ACTION_ID_ABSENCE_API_KEY,
             label = "absence.io API Key",
+            optional = true,
             placeholder = repo.absenceApiKey.mask() ?: "API Key"
         ),
         ConfigBlockMultiUsersSelect(
             scriptId = id,
             id = CONFIG_ACTION_ID_USER_LIST,
             label = "ReviewList Users",
+            optional = true,
             placeholder = "Users",
             initialUsers = repo.users
         )

@@ -38,14 +38,6 @@ class ScriptConfigBlocks(
             .mapValues { it.value as Configurable }
     }
 
-//    val viewSubmissionIds by lazy {
-//        configurableScripts.flatMap { script ->
-//            script.value
-//                .getConfigBlocks()
-//                .map { ViewSubmissionId.User.Str(it.actionId) }
-//        }
-//    }
-
     fun createBlocks(
         slackUser: SlackUser
     ): List<LayoutBlock>? {
