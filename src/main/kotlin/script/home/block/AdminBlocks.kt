@@ -63,7 +63,6 @@ class AdminBlocks(
 
     private fun BlockActionRequest.getSelectedBotEnabledValue() = payload?.actions?.find { it?.actionId == BLOCK_ACTION_ID_BOT_ENABLED_SELECTED.id }?.value?.toBoolean()
 
-
     companion object {
 
         val BLOCK_ACTION_ID_BOT_ENABLED_SELECTED = BlockActionId.Admin.Str("BOT_ENABLED_SELECTED")

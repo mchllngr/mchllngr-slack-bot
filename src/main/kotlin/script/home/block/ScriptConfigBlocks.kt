@@ -52,7 +52,6 @@ class ScriptConfigBlocks(
             adminRepo.getScriptsById(scriptIds).forEach { script ->
                 this += getScriptConfigBlocks(script)
             }
-
         }
     }
 

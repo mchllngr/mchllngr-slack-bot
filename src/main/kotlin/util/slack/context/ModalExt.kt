@@ -72,12 +72,14 @@ data class ModalText(
 
     init {
         // https://api.slack.com/reference/surfaces/views
-        if (text.length > 24) getLogger().warn(
-            """
-            |'text' must have a max length of 24 characters, the text will be cut off
-            |    provided text: $text
-            |    sanitized text: $sanitizedText
-            """.trimMargin()
-        )
+        if (text.length > 24) {
+            getLogger().warn(
+                """
+                |'text' must have a max length of 24 characters, the text will be cut off
+                |    provided text: $text
+                |    sanitized text: $sanitizedText
+                """.trimMargin()
+            )
+        }
     }
 }
