@@ -40,10 +40,12 @@ class AdminBlocks(
                         button {
                             it.actionId(BLOCK_ACTION_ID_BOT_ENABLED_SELECTED.id)
                             it.value(isBotEnabled.not().toString())
-                            it.text(plainText(if (!isBotEnabled) ":large_green_circle: Einschalten" else ":red_circle: Ausschalten", true))
+                            it.text(plainText(if (!isBotEnabled) "Einschalten" else "Ausschalten", false))
+                            it.style(if (!isBotEnabled) "primary" else "danger")
                             it.confirm(
                                 confirmationDialog { dialog ->
                                     dialog.title(plainText(if (!isBotEnabled) "Bot einschalten" else "Bot ausschalten"))
+                                    dialog.style(if (!isBotEnabled) "primary" else "danger")
                                     dialog.text(plainText("Bist du sicher?"))
                                     dialog.confirm(plainText(if (!isBotEnabled) "Einschalten" else "Ausschalten"))
                                     dialog.deny(plainText("Abbrechen"))
