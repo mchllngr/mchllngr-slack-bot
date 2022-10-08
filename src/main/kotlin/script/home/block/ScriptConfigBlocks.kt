@@ -8,10 +8,6 @@ import com.slack.api.model.block.Blocks.actions
 import com.slack.api.model.block.LayoutBlock
 import com.slack.api.model.block.composition.BlockCompositions.plainText
 import com.slack.api.model.block.element.BlockElements.button
-import com.slack.api.model.view.ViewClose
-import com.slack.api.model.view.ViewSubmit
-import com.slack.api.model.view.ViewTitle
-import com.slack.api.model.view.Views.view
 import model.blockaction.BlockActionId
 import model.script.ScriptId
 import model.view.submission.ViewSubmissionId
@@ -19,9 +15,10 @@ import repository.admin.AdminRepository
 import script.base.ScriptHandler
 import script.base.config.Configurable
 import script.base.config.block.ConfigBlockResponse
-import servicelocator.ServiceLocator.config
 import util.logger.getLogger
 import util.slack.block.headerSection
+import util.slack.context.ModalText
+import util.slack.context.openModal
 import util.slack.user.SlackUser
 import util.slack.user.isBotAdmin
 
@@ -88,40 +85,14 @@ class ScriptConfigBlocks(
     ) {
         val blocks = script.getConfigBlocks().map { it.getLayoutBlock() }
 
-        client().viewsOpen { requestBuilder ->
-            requestBuilder
-                .token(config.token.bot)
-                .triggerId(triggerId)
-                .view(
-                    view { view ->
-                        view
-                            .callbackId(scriptId.configId)
-                            .title(
-                                ViewTitle(
-                                    "plain_text",
-                                    scriptId.id.take(24), // "must be less than 25 characters"
-                                    false
-                                )
-                            )
-                            .submit(
-                                ViewSubmit(
-                                    "plain_text",
-                                    "Speichern",
-                                    false
-                                )
-                            )
-                            .close(
-                                ViewClose(
-                                    "plain_text",
-                                    "Verwerfen",
-                                    false
-                                )
-                            )
-                            .type("modal")
-                            .blocks(blocks)
-                    }
-                )
-        }
+        openModal(
+            triggerId = triggerId,
+            callbackId = scriptId.configId,
+            title = ModalText(scriptId.id),
+            blocks = blocks,
+            submit = ModalText("Speichern"),
+            close = ModalText("Verwerfen")
+        )
     }
 
     fun onViewSubmissionEvent(
@@ -156,7 +127,8 @@ class ScriptConfigBlocks(
                 .filter { (scriptId, script) -> scriptId == value.scriptId && value.configBlockId in script.configBlockIds }
                 .forEach { (_, script) ->
                     logger.debug(
-                        """Config changes:
+                        """
+                        |Config changes:
                         |    ScriptId: ${value.scriptId.id}
                         |    User: ${user.id}
                         |    ConfigBlockId: ${value.configBlockId.id}
