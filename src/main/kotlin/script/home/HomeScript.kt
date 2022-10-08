@@ -42,7 +42,7 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript, ViewSubmissionScript 
     private val birthdayBlocks by lazy { BirthdayBlocks(userRepo) }
     private val birthdayReminderBlocks by lazy { BirthdayReminderBlocks(userRepo) }
     private val userDataBlocks by lazy { UserDataBlocks() }
-    private val adminBlocks by lazy { AdminBlocks(adminRepo, scriptHandler) }
+    private val adminBlocks by lazy { AdminBlocks(adminRepo) }
     private val scriptConfigBlocks by lazy { ScriptConfigBlocks(adminRepo, scriptHandler) }
     private val footerBlocks by lazy { FooterBlocks() }
 
@@ -57,7 +57,7 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript, ViewSubmissionScript 
         UserDataBlocks.BLOCK_ACTION_ID_USER_DATA_SHOW_SELECTED,
         UserDataBlocks.BLOCK_ACTION_ID_USER_DATA_REMOVE_ALL_SELECTED,
         AdminBlocks.BLOCK_ACTION_ID_BOT_ENABLED_SELECTED,
-        AdminBlocks.BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED,
+        ScriptConfigBlocks.BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED,
         ScriptConfigBlocks.BLOCK_ACTION_SCRIPT_CONFIG_ID
     )
 
@@ -88,8 +88,8 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript, ViewSubmissionScript 
                 BirthdayBlocks.BLOCK_ACTION_ID_BIRTHDAY_INCLUDE_YEAR_CHANGED -> birthdayBlocks.onActionBirthdayIncludeYearChanged(user, request)
                 BirthdayReminderBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ENABLED_CHANGED -> birthdayReminderBlocks.onActionBirthdayReminderEnabledChanged(user, request)
                 AdminBlocks.BLOCK_ACTION_ID_BOT_ENABLED_SELECTED -> adminBlocks.onActionBotEnabledSelected(user, request)
-                AdminBlocks.BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED -> adminBlocks.onActionScriptEnabledSelected(user, request)
-                ScriptConfigBlocks.BLOCK_ACTION_SCRIPT_CONFIG_ID -> scriptConfigBlocks.onBlockActionEvent(request, ctx)
+                ScriptConfigBlocks.BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED -> scriptConfigBlocks.onActionScriptEnabledSelected(user, request)
+                ScriptConfigBlocks.BLOCK_ACTION_SCRIPT_CONFIG_ID -> scriptConfigBlocks.onActionShowScriptConfig(user, request, ctx)
                 else -> Unit
             }
         }
