@@ -12,6 +12,7 @@ data class ConfigBlockMultiUsersSelect(
     private val scriptId: ScriptId,
     private val id: ConfigBlockId,
     private val label: PlainTextObject,
+    private val optional: Boolean,
     private val hint: PlainTextObject? = null,
     private val placeholder: PlainTextObject? = null,
     private val initialUsers: List<UserId>? = null,
@@ -22,6 +23,7 @@ data class ConfigBlockMultiUsersSelect(
         scriptId: ScriptId,
         id: ConfigBlockId,
         label: String,
+        optional: Boolean,
         hint: String? = null,
         placeholder: String? = null,
         initialUsers: List<UserId>? = null,
@@ -30,6 +32,7 @@ data class ConfigBlockMultiUsersSelect(
         scriptId = scriptId,
         id = id,
         label = plainText(label),
+        optional = optional,
         hint = hint?.let { plainText(it) },
         placeholder = placeholder?.let { plainText(it) },
         initialUsers = initialUsers,
@@ -40,6 +43,7 @@ data class ConfigBlockMultiUsersSelect(
         input.blockId(blockId)
         input.label(label)
         input.hint(hint)
+        input.optional(optional)
         input.element(
             multiUsersSelect { multiUsersSelect ->
                 multiUsersSelect.actionId(actionId)
