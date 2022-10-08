@@ -38,6 +38,13 @@ class ReviewListScript : CommandScript, Configurable {
         request: SlashCommandRequest,
         ctx: SlashCommandContext
     ) {
+        when (commandId) {
+            COMMAND_ID_REVIEW_LIST -> onCommandReviewList(ctx)
+            else -> Unit
+        }
+    }
+
+    private fun onCommandReviewList(ctx: SlashCommandContext) {
         // #29 use Absence to filter out unavailable people in reviewlist
 
         val reviewUsers = repo.users
