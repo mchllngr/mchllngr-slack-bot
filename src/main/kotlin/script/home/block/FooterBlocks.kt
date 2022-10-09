@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter
 class FooterBlocks {
 
     private val dateTimeFooterFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy 'um' HH:mm:ss 'Uhr'")
+    private val buildInfo by lazy { config.buildInfo }
 
     fun createBlocks(
         now: ZonedDateTime,
@@ -43,6 +44,11 @@ class FooterBlocks {
             context(
                 listOf(
                     markdownText(":clock3: Seite zuletzt aktualisiert am ${now.format(dateTimeFooterFormat)}.")
+                )
+            ),
+            context(
+                listOf(
+                    markdownText(":construction: Version: ${buildInfo.version} (Commit: ${buildInfo.commitHash})")
                 )
             )
         )

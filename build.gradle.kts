@@ -25,6 +25,7 @@ plugins {
     kotlin("jvm")
     id("application")
     id("com.squareup.sqldelight")
+    id("com.github.gmazzo.buildconfig")
 }
 
 repositories {
@@ -32,7 +33,7 @@ repositories {
 }
 
 group = "de.mchllngr.slackbot"
-version = "1.0"
+version = System.getenv("SLACK_BOT_VERSION") ?: "local"
 
 val compileKotlin: KotlinCompile by tasks
 val compileTestKotlin: KotlinCompile by tasks
@@ -49,8 +50,8 @@ application {
 }
 
 dependencies {
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:_"))
+    implementation(Kotlin.stdlib.jdk8)
     implementation("com.slack.api:bolt-socket-mode:_")
     implementation("javax.websocket:javax.websocket-api:_")
     implementation("org.glassfish.tyrus.bundles:tyrus-standalone-client:_")
@@ -68,6 +69,13 @@ sqldelight {
         deriveSchemaFromMigrations = true
         verifyMigrations = true
     }
+}
+
+buildConfig {
+    packageName("buildconfig")
+
+    buildConfigField("String", "VERSION", "\"${project.version}\"")
+    buildConfigField("String", "COMMIT_HASH", "\"${System.getenv("SLACK_BOT_COMMIT_HASH") ?: "local"}\"")
 }
 
 tasks.jar {
