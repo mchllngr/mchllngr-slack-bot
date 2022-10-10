@@ -182,7 +182,7 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 # Docker
-docker-compose.yml
+.env
 
 # IntelliJ Plugin GitLink
 .idea/GitLink.xml
