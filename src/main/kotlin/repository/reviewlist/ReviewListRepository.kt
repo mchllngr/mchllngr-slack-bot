@@ -18,6 +18,7 @@ interface ReviewListRepository {
 class ReviewListRepositoryImpl(dataStore: DataStore) : ReviewListRepository {
 
     private val queries = dataStore.reviewListQueries
+    private val userQueries = dataStore.userQueries
 
     override var absenceApiKey: String?
         get() = queries.selectAbsenceApiKey().executeAsOneOrNull()?.absenceApiKey
@@ -27,6 +28,11 @@ class ReviewListRepositoryImpl(dataStore: DataStore) : ReviewListRepository {
         get() = queries.selectUsers().executeAsList()
         set(list) = queries.transaction {
             queries.deleteUsers()
-            list.forEach { user -> queries.insertUser(user) }
+            list.forEach { user ->
+                // make sure the user exists already to satisfy foreign constraint
+                userQueries.insert(user)
+
+                queries.insertUser(user)
+            }
         }
 }
