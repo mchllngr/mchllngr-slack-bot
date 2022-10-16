@@ -59,6 +59,8 @@ dependencies {
     implementation(Square.sqlDelight.drivers.jdbc)
     implementation("com.zaxxer:HikariCP:_")
     implementation("org.mariadb.jdbc:mariadb-java-client:_")
+    implementation(Ktor.client.core)
+    implementation(Ktor.client.cio)
 }
 
 sqldelight {

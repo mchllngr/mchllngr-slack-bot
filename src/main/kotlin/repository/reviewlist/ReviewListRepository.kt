@@ -2,6 +2,7 @@ package repository.reviewlist
 
 import datastore.DataStore
 import model.user.UserId
+import repository.absence.AbsenceRepository
 
 interface ReviewListRepository {
 
@@ -11,11 +12,17 @@ interface ReviewListRepository {
 
     companion object {
 
-        fun create(dataStore: DataStore): ReviewListRepository = ReviewListRepositoryImpl(dataStore)
+        fun create(
+            dataStore: DataStore,
+            absenceRepo: AbsenceRepository
+        ): ReviewListRepository = ReviewListRepositoryImpl(dataStore, absenceRepo)
     }
 }
 
-class ReviewListRepositoryImpl(dataStore: DataStore) : ReviewListRepository {
+class ReviewListRepositoryImpl(
+    dataStore: DataStore,
+    private val absenceRepo: AbsenceRepository
+) : ReviewListRepository {
 
     private val queries = dataStore.reviewListQueries
     private val userQueries = dataStore.userQueries
@@ -25,7 +32,7 @@ class ReviewListRepositoryImpl(dataStore: DataStore) : ReviewListRepository {
         set(key) = queries.updateAbsenceApiKey(key)
 
     override var users: List<UserId>
-        get() = queries.selectUsers().executeAsList()
+        get() = queries.selectUsers().executeAsList() // TODO #29 use AbsenceRepository.getUserAvailability to filter out unavailable users
         set(list) = queries.transaction {
             queries.deleteUsers()
             list.forEach { user ->
