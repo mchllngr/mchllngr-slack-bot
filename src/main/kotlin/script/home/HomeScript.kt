@@ -26,10 +26,10 @@ import script.home.block.HelloBlocks
 import script.home.block.ScriptConfigBlocks
 import script.home.block.TeamBlocks
 import script.home.block.UserDataBlocks
-import servicelocator.ServiceLocator.adminRepo
+import servicelocator.ServiceLocator.Admin
+import servicelocator.ServiceLocator.Team
+import servicelocator.ServiceLocator.User
 import servicelocator.ServiceLocator.scriptHandler
-import servicelocator.ServiceLocator.teamRepo
-import servicelocator.ServiceLocator.userRepo
 import util.slack.context.getUser
 import util.slack.user.SlackUser
 import util.time.getZoneDateTimeFromSlackUser
@@ -38,12 +38,12 @@ import java.time.ZonedDateTime
 class HomeScript : AppHomeOpenedScript, BlockActionScript, ViewSubmissionScript {
 
     private val helloBlocks by lazy { HelloBlocks() }
-    private val teamBlocks by lazy { TeamBlocks(teamRepo) }
-    private val birthdayBlocks by lazy { BirthdayBlocks(userRepo) }
-    private val birthdayReminderBlocks by lazy { BirthdayReminderBlocks(userRepo) }
+    private val teamBlocks by lazy { TeamBlocks(Team.repo) }
+    private val birthdayBlocks by lazy { BirthdayBlocks(User.repo) }
+    private val birthdayReminderBlocks by lazy { BirthdayReminderBlocks(User.repo) }
     private val userDataBlocks by lazy { UserDataBlocks() }
-    private val adminBlocks by lazy { AdminBlocks(adminRepo) }
-    private val scriptConfigBlocks by lazy { ScriptConfigBlocks(adminRepo, scriptHandler) }
+    private val adminBlocks by lazy { AdminBlocks(Admin.repo) }
+    private val scriptConfigBlocks by lazy { ScriptConfigBlocks(Admin.repo, scriptHandler) }
     private val footerBlocks by lazy { FooterBlocks() }
 
     override val id = ID
@@ -142,7 +142,7 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript, ViewSubmissionScript 
         slackUser: SlackUser?
     ): List<LayoutBlock> {
         val now: ZonedDateTime = getZoneDateTimeFromSlackUser(slackUser)
-        val user = slackUser?.id?.let { userRepo.select(UserId(it)) }
+        val user = slackUser?.id?.let { User.repo.select(UserId(it)) }
 
         return buildList {
             addAll(helloBlocks.createBlocks(slackUser))

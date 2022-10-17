@@ -2,15 +2,15 @@
 
 import script.home.HomeScript
 import script.reviewlist.ReviewListScript
+import servicelocator.ServiceLocator.Database
 import servicelocator.ServiceLocator.config
-import servicelocator.ServiceLocator.dataStore
 import util.debug.DebugMode
 import util.slack.bot.SlackBot
 
 fun main() {
     DebugMode.init(config.debugMode)
 
-    dataStore.initialize()
+    Database.dataStore.initialize()
 
     SlackBot.start {
         addScript(HomeScript())
