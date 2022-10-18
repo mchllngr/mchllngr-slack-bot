@@ -44,7 +44,7 @@ class AbsenceApiClient(
             .with(ChronoField.SECOND_OF_DAY, 0)
             .with(ChronoField.MINUTE_OF_DAY, 0)
             .with(ChronoField.HOUR_OF_DAY, 0)
-        val endOfDay: ZonedDateTime = now // FIXME currently something like 23:11:23 and not 23:59:59
+        val endOfDay: ZonedDateTime = now
             .with(ChronoField.SECOND_OF_DAY, 59)
             .with(ChronoField.MINUTE_OF_DAY, 59)
             .with(ChronoField.HOUR_OF_DAY, 23)

@@ -3,7 +3,9 @@ package script.reviewlist
 import com.slack.api.app_backend.slash_commands.response.SlashCommandResponse
 import com.slack.api.bolt.context.builtin.SlashCommandContext
 import com.slack.api.bolt.request.builtin.SlashCommandRequest
+import com.slack.api.model.block.Blocks.context
 import com.slack.api.model.block.LayoutBlock
+import com.slack.api.model.block.composition.BlockCompositions.plainText
 import model.command.CommandId
 import model.script.ScriptId
 import model.user.UserId
@@ -19,6 +21,7 @@ import servicelocator.ServiceLocator.ReviewList
 import servicelocator.ServiceLocator.random
 import util.map.filterNotNullValues
 import util.slack.block.markdownSection
+import util.slack.block.plainTextSection
 import util.slack.context.getUser
 import util.slack.user.SlackUser
 import util.slack.user.usernameString
@@ -65,19 +68,38 @@ class ReviewListScript : CommandScript, Configurable {
 
         val userAvailability = getUserAvailability(users, now)
 
-        val filteredUsers = users
+        val availableUsers = users
             .filter { (userId, _) -> userAvailability[userId] != Availability.UNAVAILABLE }
             .values
-
-        val reviewUsers = filteredUsers
             .shuffled(random)
             .mapIndexed { index, user -> "${index + 1}. ${user.usernameString}" }
             .joinToString(separator = "\n")
 
+        val unavailableUsers = users
+            .filter { (userId, _) -> userAvailability[userId] == Availability.UNAVAILABLE }
+            .values
+            .map { user -> user.profile?.displayName }
+            .sortedBy { it }
+            .joinToString(separator = ", ")
+
         ctx.respondInChannel(
-            listOf(
-                markdownSection(":speaking_head_in_silhouette: *Review-Reihenfolge:*\n$reviewUsers")
-            )
+            buildList {
+                this += markdownSection(":speaking_head_in_silhouette: *Review-Reihenfolge:*")
+
+                if (availableUsers.isNotBlank()) {
+                    this += markdownSection(availableUsers)
+                } else {
+                    this += plainTextSection("Keine Review-Teilnehmer vorhanden.")
+                }
+
+                if (unavailableUsers.isNotBlank()) {
+                    this += context(
+                        listOf(
+                            plainText("Abwesend: $unavailableUsers", true)
+                        )
+                    )
+                }
+            }
         )
     }
 
