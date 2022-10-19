@@ -15,9 +15,11 @@ object HttpClientFactory {
 
     fun create(): HttpClient = HttpClient(CIO) {
         install(ContentNegotiation) {
-            json(Json {
-                ignoreUnknownKeys = true
-            })
+            json(
+                Json {
+                    ignoreUnknownKeys = true
+                }
+            )
         }
 
         if (ServiceLocator.config.debugMode) {
