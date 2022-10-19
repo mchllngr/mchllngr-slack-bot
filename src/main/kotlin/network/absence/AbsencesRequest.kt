@@ -1,6 +1,5 @@
 package network.absence
 
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
