@@ -1,6 +1,16 @@
+selectAbsenceApiKeyId:
+SELECT absenceApiKeyId
+FROM reviewList
+WHERE id = 0;
+
 selectAbsenceApiKey:
 SELECT absenceApiKey
 FROM reviewList
+WHERE id = 0;
+
+updateAbsenceApiKeyId:
+UPDATE reviewList
+SET absenceApiKeyId = ?
 WHERE id = 0;
 
 updateAbsenceApiKey:

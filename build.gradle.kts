@@ -23,6 +23,7 @@ allprojects {
 
 plugins {
     kotlin("jvm")
+    kotlin("plugin.serialization")
     id("application")
     id("com.squareup.sqldelight")
     id("com.github.gmazzo.buildconfig")
@@ -59,6 +60,12 @@ dependencies {
     implementation(Square.sqlDelight.drivers.jdbc)
     implementation("com.zaxxer:HikariCP:_")
     implementation("org.mariadb.jdbc:mariadb-java-client:_")
+    implementation(Ktor.client.core)
+    implementation(Ktor.client.cio)
+    implementation(Ktor.client.logging)
+    implementation(Ktor.client.contentNegotiation)
+    implementation(Ktor.plugins.serialization.kotlinx.json)
+    implementation("com.wealdtech.hawk:hawk-core:_")
 }
 
 sqldelight {

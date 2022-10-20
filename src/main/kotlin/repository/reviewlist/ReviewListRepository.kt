@@ -5,6 +5,8 @@ import model.user.UserId
 
 interface ReviewListRepository {
 
+    var absenceApiKeyId: String?
+
     var absenceApiKey: String?
 
     var users: List<UserId>
@@ -19,6 +21,10 @@ class ReviewListRepositoryImpl(dataStore: DataStore) : ReviewListRepository {
 
     private val queries = dataStore.reviewListQueries
     private val userQueries = dataStore.userQueries
+
+    override var absenceApiKeyId: String?
+        get() = queries.selectAbsenceApiKeyId().executeAsOneOrNull()?.absenceApiKeyId
+        set(keyId) = queries.updateAbsenceApiKeyId(keyId)
 
     override var absenceApiKey: String?
         get() = queries.selectAbsenceApiKey().executeAsOneOrNull()?.absenceApiKey
