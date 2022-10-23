@@ -3,6 +3,10 @@ SELECT *
 FROM user
 WHERE id = ?;
 
+selectAll:
+SELECT *
+FROM user;
+
 insert:
 INSERT IGNORE INTO user(id)
 VALUES (?);

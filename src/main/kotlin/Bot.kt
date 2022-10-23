@@ -1,8 +1,6 @@
-import script.BirthdayScript
-import script.HomeScript
-import script.TestScript
 // ktlint-disable filename
 
+import script.birthday.BirthdayScript
 import script.home.HomeScript
 import script.reviewlist.ReviewListScript
 import servicelocator.ServiceLocator.config
@@ -17,7 +15,6 @@ fun main() {
 
     SlackBot.start {
         addScript(HomeScript())
-        addScript(TestScript())
         addScript(BirthdayScript())
         addScript(ReviewListScript())
     }
