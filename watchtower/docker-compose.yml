@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  watchtower: 
+  watchtower:
     container_name: watchtower
     image: containrrr/watchtower
     restart: always

@@ -4,6 +4,9 @@ import datastore.DataStore
 import factory.DatabaseFactory
 import factory.SqlDriverFactory
 import model.config.Config
+import network.absence.AbsenceApiClient
+import network.client.HttpClientFactory
+import repository.absence.AbsenceRepository
 import repository.admin.AdminRepository
 import repository.reviewlist.ReviewListRepository
 import repository.script.ScriptRepository
@@ -18,21 +21,48 @@ object ServiceLocator {
 
     val config by lazy { Config.create() }
 
-    val scriptHandler by lazy { ScriptHandler.create(adminRepo) }
+    val scriptHandler by lazy { ScriptHandler.create(Admin.repo) }
 
-    private val databaseDriver by lazy { SqlDriverFactory.create() }
+    object Database {
 
-    private val database by lazy { DatabaseFactory.create(databaseDriver) }
+        private val databaseDriver by lazy { SqlDriverFactory.create() }
 
-    val dataStore by lazy { DataStore.create(databaseDriver, database) }
+        private val database by lazy { DatabaseFactory.create(databaseDriver) }
 
-    val adminRepo by lazy { AdminRepository.create(dataStore, scriptRepo) }
+        val dataStore by lazy { DataStore.create(databaseDriver, database) }
+    }
 
-    private val scriptRepo by lazy { ScriptRepository.create(dataStore) }
+    private object Http {
 
-    val userRepo by lazy { UserRepository.create(dataStore) }
+        val client by lazy { HttpClientFactory.create() }
+    }
 
-    val teamRepo by lazy { TeamRepository.create(dataStore) }
+    object Absence {
 
-    val reviewListRepo by lazy { ReviewListRepository.create(dataStore) }
+        private val apiClient by lazy { AbsenceApiClient.create(Http.client) }
+
+        val repo by lazy { AbsenceRepository.create(apiClient) }
+    }
+
+    object Admin {
+
+        private val scriptRepo by lazy { ScriptRepository.create(Database.dataStore) }
+
+        val repo by lazy { AdminRepository.create(Database.dataStore, scriptRepo) }
+    }
+
+    object User {
+
+        val repo by lazy { UserRepository.create(Database.dataStore) }
+    }
+
+    object Team {
+
+        val repo by lazy { TeamRepository.create(Database.dataStore) }
+    }
+
+    object ReviewList {
+
+        val repo by lazy { ReviewListRepository.create(Database.dataStore) }
+    }
 }

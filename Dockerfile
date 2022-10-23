@@ -1,6 +1,10 @@
 # Build with gradle image
 FROM gradle:7.5.1 as builder
 
+# Set build info, will be overridden
+ARG SLACK_BOT_VERSION=unknown
+ARG SLACK_BOT_COMMIT_HASH=unknown
+
 # Set working dir
 WORKDIR /
 

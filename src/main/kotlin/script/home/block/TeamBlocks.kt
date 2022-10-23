@@ -41,7 +41,7 @@ class TeamBlocks(
         }
     }
 
-    fun getTeamBlocks(teamsForUser: List<Team>): List<LayoutBlock> = buildList {
+    private fun getTeamBlocks(teamsForUser: List<Team>): List<LayoutBlock> = buildList {
         teamsForUser.forEach { team ->
             this += markdownSection("Teammitglieder *${team.name}*:")
 

@@ -26,7 +26,7 @@ VALUES (0, TRUE);
 -- script
 CREATE TABLE script(
     id VARCHAR(256) AS ScriptId NOT NULL PRIMARY KEY,
-    enabled BOOLEAN NOT NULL DEFAULT TRUE
+    enabled BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE INDEX script_id ON script(id);
@@ -36,7 +36,7 @@ CREATE TABLE user(
     id VARCHAR(256) AS UserId NOT NULL PRIMARY KEY,
     birthdate VARCHAR(256) AS LocalDate DEFAULT NULL,
     includeBirthdateYear BOOLEAN NOT NULL DEFAULT TRUE,
-    enableBirthdateReminders BOOLEAN NOT NULL DEFAULT TRUE
+    enableBirthdateReminders BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE INDEX user_id ON user(id);
@@ -62,6 +62,7 @@ CREATE TABLE teamUser(
 -- reviewList
 CREATE TABLE reviewList(
     id INTEGER NOT NULL PRIMARY KEY,
+    absenceApiKeyId VARCHAR(256),
     absenceApiKey VARCHAR(256)
 );
 

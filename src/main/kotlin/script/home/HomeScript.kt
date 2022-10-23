@@ -26,10 +26,10 @@ import script.home.block.HelloBlocks
 import script.home.block.ScriptConfigBlocks
 import script.home.block.TeamBlocks
 import script.home.block.UserDataBlocks
-import servicelocator.ServiceLocator.adminRepo
+import servicelocator.ServiceLocator.Admin
+import servicelocator.ServiceLocator.Team
+import servicelocator.ServiceLocator.User
 import servicelocator.ServiceLocator.scriptHandler
-import servicelocator.ServiceLocator.teamRepo
-import servicelocator.ServiceLocator.userRepo
 import util.slack.context.getUser
 import util.slack.user.SlackUser
 import util.time.getZoneDateTimeFromSlackUser
@@ -38,12 +38,12 @@ import java.time.ZonedDateTime
 class HomeScript : AppHomeOpenedScript, BlockActionScript, ViewSubmissionScript {
 
     private val helloBlocks by lazy { HelloBlocks() }
-    private val teamBlocks by lazy { TeamBlocks(teamRepo) }
-    private val birthdayBlocks by lazy { BirthdayBlocks(userRepo) }
-    private val birthdayReminderBlocks by lazy { BirthdayReminderBlocks(userRepo) }
+    private val teamBlocks by lazy { TeamBlocks(Team.repo) }
+    private val birthdayBlocks by lazy { BirthdayBlocks(User.repo) }
+    private val birthdayReminderBlocks by lazy { BirthdayReminderBlocks(User.repo) }
     private val userDataBlocks by lazy { UserDataBlocks() }
-    private val adminBlocks by lazy { AdminBlocks(adminRepo, scriptHandler) }
-    private val scriptConfigBlocks by lazy { ScriptConfigBlocks(adminRepo, scriptHandler) }
+    private val adminBlocks by lazy { AdminBlocks(Admin.repo) }
+    private val scriptConfigBlocks by lazy { ScriptConfigBlocks(Admin.repo, scriptHandler) }
     private val footerBlocks by lazy { FooterBlocks() }
 
     override val id = ID
@@ -57,7 +57,7 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript, ViewSubmissionScript 
         UserDataBlocks.BLOCK_ACTION_ID_USER_DATA_SHOW_SELECTED,
         UserDataBlocks.BLOCK_ACTION_ID_USER_DATA_REMOVE_ALL_SELECTED,
         AdminBlocks.BLOCK_ACTION_ID_BOT_ENABLED_SELECTED,
-        AdminBlocks.BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED,
+        ScriptConfigBlocks.BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED,
         ScriptConfigBlocks.BLOCK_ACTION_SCRIPT_CONFIG_ID
     )
 
@@ -88,8 +88,8 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript, ViewSubmissionScript 
                 BirthdayBlocks.BLOCK_ACTION_ID_BIRTHDAY_INCLUDE_YEAR_CHANGED -> birthdayBlocks.onActionBirthdayIncludeYearChanged(user, request)
                 BirthdayReminderBlocks.BLOCK_ACTION_ID_BIRTHDAY_REMINDER_ENABLED_CHANGED -> birthdayReminderBlocks.onActionBirthdayReminderEnabledChanged(user, request)
                 AdminBlocks.BLOCK_ACTION_ID_BOT_ENABLED_SELECTED -> adminBlocks.onActionBotEnabledSelected(user, request)
-                AdminBlocks.BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED -> adminBlocks.onActionScriptEnabledSelected(user, request)
-                ScriptConfigBlocks.BLOCK_ACTION_SCRIPT_CONFIG_ID -> scriptConfigBlocks.onBlockActionEvent(request, ctx)
+                ScriptConfigBlocks.BLOCK_ACTION_ID_SCRIPT_ENABLED_SELECTED -> scriptConfigBlocks.onActionScriptEnabledSelected(user, request)
+                ScriptConfigBlocks.BLOCK_ACTION_SCRIPT_CONFIG_ID -> scriptConfigBlocks.onActionShowScriptConfig(user, request, ctx)
                 else -> Unit
             }
         }
@@ -142,7 +142,7 @@ class HomeScript : AppHomeOpenedScript, BlockActionScript, ViewSubmissionScript 
         slackUser: SlackUser?
     ): List<LayoutBlock> {
         val now: ZonedDateTime = getZoneDateTimeFromSlackUser(slackUser)
-        val user = slackUser?.id?.let { userRepo.select(UserId(it)) }
+        val user = slackUser?.id?.let { User.repo.select(UserId(it)) }
 
         return buildList {
             addAll(helloBlocks.createBlocks(slackUser))
