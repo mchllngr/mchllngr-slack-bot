@@ -1,6 +1,8 @@
 package script.base
 
+import com.slack.api.app_backend.events.payload.EventsApiPayload
 import com.slack.api.bolt.App
+import com.slack.api.bolt.context.builtin.EventContext
 import com.slack.api.bolt.handler.builtin.BlockActionHandler
 import com.slack.api.bolt.handler.builtin.SlashCommandHandler
 import com.slack.api.bolt.handler.builtin.ViewSubmissionHandler
@@ -8,9 +10,11 @@ import com.slack.api.model.event.AppHomeOpenedEvent
 import com.slack.api.model.event.MessageEvent
 import model.blockaction.BlockActionId
 import model.command.CommandId
+import model.message.MessageId
 import model.script.ScriptId
 import model.user.UserId
 import model.view.submission.ViewSubmissionId
+import okhttp3.internal.toImmutableMap
 import repository.admin.AdminRepository
 import script.home.HomeScript
 import util.slack.context.getUser
@@ -49,9 +53,7 @@ class ScriptHandler(
         }
     }
 
-    fun getScripts(): Map<ScriptId, Script> = scripts.toMap()
-
-    fun getScriptIds() = scripts.keys.toSet()
+    fun getScripts(): Map<ScriptId, Script> = scripts.toImmutableMap()
 
     // region AppHomeOpenedScripts
 
@@ -79,16 +81,64 @@ class ScriptHandler(
 
     private fun App.registerMessageScripts() {
         val messageScripts = scripts.values.filterIsInstance<MessageScript>()
+        val idRegexToIdAndScripts = messageScripts.toMapOfIdRegexToIdAndScripts()
 
         event(MessageEvent::class.java) { event, ctx ->
-            if (!adminRepo.isBotEnabled()) return@event ctx.ack()
+            val text = event.event?.text
+            if (text.isNullOrEmpty()) return@event ctx.ack()
 
-            messageScripts
-                .filter { adminRepo.isScriptEnabled(it.id) } // #14 improve performance when checking if scripts are enabled
-                .forEach { it.onMessageEvent(event, ctx) }
+            idRegexToIdAndScripts.forEach { (idRegex, idToScripts) ->
+                if (!idRegex.matches(text)) return@forEach
+
+                val (messageId, scripts) = idToScripts
+                when (messageId) {
+                    is MessageId.User -> handleUserMessageScripts(messageId, scripts, event, ctx)
+                    is MessageId.Admin -> handleAdminMessageScripts(messageId, scripts, event, ctx)
+                }
+            }
 
             ctx.ack()
         }
+    }
+
+    private fun List<MessageScript>.toMapOfIdRegexToIdAndScripts(): Map<Regex, Pair<MessageId, List<MessageScript>>> {
+        val messageIdToScripts = toMapOfIdToScripts { messageIds }
+
+        val idRegexToIdAndScripts = mutableMapOf<Regex, Pair<MessageId, List<MessageScript>>>()
+        messageIdToScripts.forEach { (key, value) ->
+            val idRegex = when (key) {
+                is MessageId.User.Str -> key.idRegex
+                is MessageId.User.Regex -> key.idRegex
+                is MessageId.Admin.Str -> key.idRegex
+                is MessageId.Admin.Regex -> key.idRegex
+            }
+            idRegexToIdAndScripts[idRegex] = key to value
+        }
+        return idRegexToIdAndScripts
+    }
+
+    private fun handleUserMessageScripts(
+        messageId: MessageId.User,
+        scripts: List<MessageScript>,
+        event: EventsApiPayload<MessageEvent>,
+        ctx: EventContext
+    ) {
+        if (!adminRepo.isBotEnabled()) return
+
+        scripts
+            .filter { adminRepo.isScriptEnabled(it.id) } // #14 improve performance when checking if scripts are enabled
+            .forEach { it.onMessageEvent(messageId, event, ctx) }
+    }
+
+    private fun handleAdminMessageScripts(
+        messageId: MessageId.Admin,
+        scripts: List<MessageScript>,
+        event: EventsApiPayload<MessageEvent>,
+        ctx: EventContext
+    ) {
+        if (!ctx.getUser(event).isBotAdmin) return
+
+        scripts.forEach { it.onMessageEvent(messageId, event, ctx) }
     }
 
     // endregion
@@ -97,30 +147,15 @@ class ScriptHandler(
 
     private fun App.registerCommandScripts() {
         val commandScripts = scripts.values.filterIsInstance<CommandScript>()
-        val commandIdToScript = commandScripts.toMapOfCommandIdToScripts()
+        val commandIdToScripts = commandScripts.toMapOfIdToScripts { commandIds }
 
-        commandIdToScript
+        commandIdToScripts
             .forEach { (commandId, scripts) ->
                 when (commandId) {
                     is CommandId.User -> registerUserCommandScripts(commandId, scripts)
                     is CommandId.Admin -> registerAdminCommandScripts(commandId, scripts)
                 }
             }
-    }
-
-    private fun List<CommandScript>.toMapOfCommandIdToScripts(): Map<CommandId, List<CommandScript>> {
-        val commandIdToScript = mutableMapOf<CommandId, MutableList<CommandScript>>()
-        forEach { script ->
-            script.commandIds.forEach { id ->
-                val scriptsForId = commandIdToScript[id]
-                if (scriptsForId == null) {
-                    commandIdToScript[id] = mutableListOf(script)
-                } else {
-                    scriptsForId += script
-                }
-            }
-        }
-        return commandIdToScript
     }
 
     private fun App.registerUserCommandScripts(
@@ -167,30 +202,15 @@ class ScriptHandler(
 
     private fun App.registerBlockActionScripts() {
         val blockActionScripts = scripts.values.filterIsInstance<BlockActionScript>()
-        val blockActionIdToScript = blockActionScripts.toMapOfBlockActionIdToScripts()
+        val blockActionIdToScripts = blockActionScripts.toMapOfIdToScripts { blockActionIds }
 
-        blockActionIdToScript
+        blockActionIdToScripts
             .forEach { (blockActionId, scripts) ->
                 when (blockActionId) {
                     is BlockActionId.User -> registerUserBlockActionScripts(blockActionId, scripts)
                     is BlockActionId.Admin -> registerAdminBlockActionScripts(blockActionId, scripts)
                 }
             }
-    }
-
-    private fun List<BlockActionScript>.toMapOfBlockActionIdToScripts(): Map<BlockActionId, List<BlockActionScript>> {
-        val blockActionIdToScript = mutableMapOf<BlockActionId, MutableList<BlockActionScript>>()
-        forEach { script ->
-            script.blockActionIds.forEach { id ->
-                val scriptsForId = blockActionIdToScript[id]
-                if (scriptsForId == null) {
-                    blockActionIdToScript[id] = mutableListOf(script)
-                } else {
-                    scriptsForId += script
-                }
-            }
-        }
-        return blockActionIdToScript
     }
 
     private fun App.registerUserBlockActionScripts(
@@ -237,30 +257,15 @@ class ScriptHandler(
 
     private fun App.registerViewSubmissionScripts() {
         val viewSubmissionScripts = scripts.values.filterIsInstance<ViewSubmissionScript>()
-        val viewSubmissionIdToScript = viewSubmissionScripts.toMapOfViewSubmissionIdToScripts()
+        val viewSubmissionIdToScripts = viewSubmissionScripts.toMapOfIdToScripts { viewSubmissionIds }
 
-        viewSubmissionIdToScript
+        viewSubmissionIdToScripts
             .forEach { (viewSubmissionId, scripts) ->
                 when (viewSubmissionId) {
                     is ViewSubmissionId.User -> registerUserViewSubmissionScripts(viewSubmissionId, scripts)
                     is ViewSubmissionId.Admin -> registerAdminViewSubmissionScripts(viewSubmissionId, scripts)
                 }
             }
-    }
-
-    private fun List<ViewSubmissionScript>.toMapOfViewSubmissionIdToScripts(): Map<ViewSubmissionId, List<ViewSubmissionScript>> {
-        val viewSubmissionIdToScript = mutableMapOf<ViewSubmissionId, MutableList<ViewSubmissionScript>>()
-        forEach { script ->
-            script.viewSubmissionIds.forEach { id ->
-                val scriptsForId = viewSubmissionIdToScript[id]
-                if (scriptsForId == null) {
-                    viewSubmissionIdToScript[id] = mutableListOf(script)
-                } else {
-                    scriptsForId += script
-                }
-            }
-        }
-        return viewSubmissionIdToScript
     }
 
     private fun App.registerUserViewSubmissionScripts(
@@ -302,6 +307,21 @@ class ScriptHandler(
     }
 
     // endregion
+
+    private fun <Id, Script> List<Script>.toMapOfIdToScripts(idsProvider: Script.() -> List<Id>): Map<Id, List<Script>> {
+        val idToScript = mutableMapOf<Id, MutableList<Script>>()
+        forEach { script ->
+            script.idsProvider().forEach { id ->
+                val scriptsForId = idToScript[id]
+                if (scriptsForId == null) {
+                    idToScript[id] = mutableListOf(script)
+                } else {
+                    scriptsForId += script
+                }
+            }
+        }
+        return idToScript
+    }
 
     companion object {
 
