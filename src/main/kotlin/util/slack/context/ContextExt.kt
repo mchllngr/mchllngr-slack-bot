@@ -1,5 +1,6 @@
 package util.slack.context
 
+import com.slack.api.app_backend.events.payload.EventsApiPayload
 import com.slack.api.bolt.context.Context
 import com.slack.api.bolt.request.builtin.BlockActionRequest
 import com.slack.api.bolt.request.builtin.SlashCommandRequest
@@ -8,6 +9,7 @@ import com.slack.api.methods.response.chat.ChatPostMessageResponse
 import com.slack.api.methods.response.users.UsersInfoResponse
 import com.slack.api.model.Conversation
 import com.slack.api.model.block.LayoutBlock
+import com.slack.api.model.event.MessageEvent
 import model.user.UserId
 import servicelocator.ServiceLocator.config
 import util.slack.user.SlackUser
@@ -46,5 +48,7 @@ fun Context.getUser(request: SlashCommandRequest) = getUser(UserId(request.paylo
 fun Context.getUser(request: BlockActionRequest) = getUser(UserId(request.payload.user.id))
 
 fun Context.getUser(request: ViewSubmissionRequest) = getUser(UserId(request.payload.user.id))
+
+fun Context.getUser(event: EventsApiPayload<MessageEvent>) = getUser(UserId(event.event.user))
 
 fun Context.userExists(userId: UserId) = getUser(userId) != null
