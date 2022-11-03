@@ -30,12 +30,12 @@ fun Context.getConversation(name: String): Conversation? {
 
 fun Context.postChatMessageInChannel(
     channelName: String,
-    blocksBuilder: () -> List<LayoutBlock>
+    blocks: List<LayoutBlock>
 ): ChatPostMessageResponse = client().chatPostMessage { requestBuilder ->
     requestBuilder
         .token(config.token.bot)
         .channel(channelName)
-        .blocks(blocksBuilder())
+        .blocks(blocks)
 }
 
 fun Context.addReactionToMessage(

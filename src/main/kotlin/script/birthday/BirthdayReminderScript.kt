@@ -5,7 +5,6 @@ import com.slack.api.bolt.context.Context
 import com.slack.api.bolt.context.builtin.EventContext
 import com.slack.api.model.block.LayoutBlock
 import com.slack.api.model.event.MessageEvent
-import db.SelectUsersForTeam
 import db.User
 import model.message.MessageId
 import model.script.ScriptId
@@ -65,53 +64,33 @@ class BirthdayReminderScript : MessageScript {
                 }
             }
 
-        removeReactionFromOriginalMessage("thinking_face", event, ctx)
         addReactionToOriginalMessage("thumbsup", event, ctx)
+        removeReactionFromOriginalMessage("thinking_face", event, ctx)
     }
 
-    private fun User.getBirthdays(now: ZonedDateTime): List<UserBirthday> {
-        // TODO create improved SQL for getting all team members in one query (which also need to have a birthdate set)
-        // FIXME why is alex missing for me?
-        val teams = teamRepo.getTeamsForUser(id)
-        val allTeamMembers = teams.flatMap { teamRepo.getUsersForTeam(it.id) }
-            .distinctBy { it.id }
-            .filterNot { it.id == id }
+    private fun User.getBirthdays(now: ZonedDateTime) = teamRepo.getTeamMembersWithBirthdateForUser(id)
+        .mapNotNull { user ->
+            val localNow: LocalDate = now.toLocalDate()
 
-        return allTeamMembers.getBirthdaysInNext7Days(now)
-    }
+            var nextBirthday: LocalDate = LocalDate.of(localNow.year, user.birthdate.month, user.birthdate.dayOfMonth)
+            if (nextBirthday.isBefore(localNow)) nextBirthday = nextBirthday.plusYears(1)
 
-    private fun List<SelectUsersForTeam>.getBirthdaysInNext7Days(now: ZonedDateTime) = mapNotNull { user ->
-        user.birthdate ?: return@mapNotNull null
+            val periodUntil = localNow.until(nextBirthday).takeIf { it in REMINDER_PERIOD_DAYS }
 
-        val localNow: LocalDate = now.toLocalDate()
-
-        var nextBirthday: LocalDate = LocalDate.of(localNow.year, user.birthdate.month, user.birthdate.dayOfMonth)
-        if (nextBirthday.isBefore(localNow)) nextBirthday = nextBirthday.plusYears(1)
-
-        val periodUntil = localNow.until(nextBirthday).takeIf { it in REMINDER_PERIOD_DAYS }
-
-        return@mapNotNull if (periodUntil != null) {
-            UserBirthday(user.id, user.birthdate, user.includeBirthdateYear, periodUntil)
-        } else {
-            null
+            return@mapNotNull if (periodUntil != null) {
+                UserBirthday(user.id, user.birthdate, user.includeBirthdateYear, periodUntil)
+            } else {
+                null
+            }
         }
-    }
 
     private fun postBirthdayReminderToUser(
         user: User,
         birthdaysForUser: List<UserBirthday>,
         ctx: Context
     ) {
-        val blocks = buildList {
-            this += markdownSection(":birthday: *Geburtstagserinnerungen*")
-            birthdaysForUser.forEach {
-                this += it.getBirthdayMessageBlock()
-            }
-        }
-
-        ctx.postChatMessageInChannel(user.id.id) {
-            blocks
-        }
+        val blocks = birthdaysForUser.map { it.getBirthdayMessageBlock() }
+        ctx.postChatMessageInChannel(user.id.id, blocks)
     }
 
     private fun addReactionToOriginalMessage(
@@ -160,6 +139,7 @@ class BirthdayReminderScript : MessageScript {
                 null
             }
 
+            // TODO change format of messages
             val usernameString = userId.usernameString
             val message = if (age != null) {
                 ":cake: $usernameString wird *$daysUntilMsg* (${birthdate.format(DATE_FORMATTER)}) *$age Jahre* alt!"
