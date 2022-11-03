@@ -139,13 +139,14 @@ class BirthdayReminderScript : MessageScript {
                 null
             }
 
-            // TODO change format of messages
             val usernameString = userId.usernameString
-            val message = if (age != null) {
-                ":cake: $usernameString wird *$daysUntilMsg* (${birthdate.format(DATE_FORMATTER)}) *$age Jahre* alt!"
+            val birthdayMsg = if (age != null) {
+                "$usernameString wird *$daysUntilMsg* (${birthdate.format(DATE_FORMATTER)}) *$age Jahre* alt!"
             } else {
-                ":cake: $usernameString hat *$daysUntilMsg* (${birthdate.format(DATE_WITHOUT_YEAR_FORMATTER)}) Geburtstag!"
+                "$usernameString hat *$daysUntilMsg* (${birthdate.format(DATE_WITHOUT_YEAR_FORMATTER)}) Geburtstag!"
             }
+
+            val message = ":birthday::cake: $birthdayMsg :cake::birthday:"
 
             return markdownSection(message)
         }
