@@ -64,6 +64,7 @@ fun Context.getUser(userId: UserId): SlackUser? {
     val usersInfo: UsersInfoResponse = client().usersInfo {
         it.token(config.token.bot)
         it.user(userId.id)
+        it.includeLocale(true)
     }
     return if (usersInfo.isOk) usersInfo.user else null
 }

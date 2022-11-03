@@ -24,9 +24,11 @@ import util.slack.block.markdownSection
 import util.slack.block.plainTextSection
 import util.slack.context.getUser
 import util.slack.user.SlackUser
+import util.slack.user.userLocale
 import util.slack.user.usernameString
 import util.time.getZoneDateTimeFromSlackUser
 import java.time.ZonedDateTime
+import java.util.*
 
 class ReviewListScript : CommandScript, Configurable {
 
@@ -61,12 +63,13 @@ class ReviewListScript : CommandScript, Configurable {
         ctx: SlashCommandContext
     ) {
         val now: ZonedDateTime = getZoneDateTimeFromSlackUser(slackUser)
+        val userLocale = slackUser.userLocale
 
         val users = repo.users
             .associateWith { ctx.getUser(it) }
             .filterNotNullValues()
 
-        val userAvailability = getUserAvailability(users, now)
+        val userAvailability = getUserAvailability(users, now, userLocale)
 
         val availableUsers = users
             .filter { (userId, _) -> userAvailability[userId] != Availability.UNAVAILABLE }
@@ -105,7 +108,8 @@ class ReviewListScript : CommandScript, Configurable {
 
     private fun getUserAvailability(
         users: Map<UserId, SlackUser>,
-        now: ZonedDateTime
+        now: ZonedDateTime,
+        userLocale: Locale
     ): Map<UserId, Availability> {
         val absenceApiKeyId = repo.absenceApiKeyId
         val absenceApiKey = repo.absenceApiKey
@@ -118,7 +122,8 @@ class ReviewListScript : CommandScript, Configurable {
             absenceApiKeyId,
             absenceApiKey,
             now,
-            userEmails
+            userEmails,
+            userLocale
         )
     }
 

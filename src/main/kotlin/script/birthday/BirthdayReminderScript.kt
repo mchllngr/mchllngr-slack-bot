@@ -157,8 +157,8 @@ class BirthdayReminderScript : MessageScript {
 
         private val MESSAGE_ID_SEND_BIRTHDAY_REMINDER = MessageId.User.Regex("^.*run script: send birthday reminder\\.?$".toRegex(RegexOption.IGNORE_CASE))
 
-        private val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY) // TODO only Germany locale? Maybe configurable via docker locale?
-        private val DATE_WITHOUT_YEAR_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.", Locale.GERMANY) // TODO only Germany locale? Maybe configurable via docker locale?
+        private val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY) // #18 also localize date format
+        private val DATE_WITHOUT_YEAR_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.", Locale.GERMANY) // #18 also localize date format
 
         private val PERIOD_DAYS_0: Period = Period.ZERO
         private val PERIOD_DAYS_1: Period = Period.ofDays(1)

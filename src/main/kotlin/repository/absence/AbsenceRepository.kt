@@ -11,7 +11,8 @@ interface AbsenceRepository {
         keyId: String,
         key: String,
         now: ZonedDateTime,
-        userEmails: Map<UserId, String?>
+        userEmails: Map<UserId, String?>,
+        locale: Locale
     ): Map<UserId, Availability>
 
     companion object {
@@ -26,38 +27,45 @@ class AbsenceRepositoryImpl(private val absenceApiClient: AbsenceApiClient) : Ab
         keyId: String,
         key: String,
         now: ZonedDateTime,
-        userEmails: Map<UserId, String?>
+        userEmails: Map<UserId, String?>,
+        locale: Locale
     ): Map<UserId, Availability> {
-        val emails = buildEmailList(userEmails.values.filterNotNull())
+        val emails = buildEmailList(userEmails.values.filterNotNull(), locale)
         val absencesResponse = absenceApiClient.getAbsences(keyId, key, now, emails)
         return userEmails.mapValues { (_, email) ->
-            val reasonId = absencesResponse.getReasonId(email)
+            val reasonId = absencesResponse.getReasonId(email, locale)
             mapReasonIdToAvailability(reasonId)
         }
     }
 
-    private fun buildEmailList(emails: List<String>) = buildList {
+    private fun buildEmailList(
+        emails: List<String>,
+        locale: Locale
+    ) = buildList {
         emails.forEach { email ->
-            val lowercaseEmail = email.toLowerCaseEmail()
+            val lowercaseEmail = email.toLowerCaseEmail(locale)
             add(lowercaseEmail)
-            add(lowercaseEmail.toCapitalizedEmail())
+            add(lowercaseEmail.toCapitalizedEmail(locale))
         }
     }
 
-    private fun String.toLowerCaseEmail() = lowercase(Locale.getDefault())
+    private fun String.toLowerCaseEmail(locale: Locale) = lowercase(locale)
 
-    private fun Map<String, String>.getReasonId(email: String?): String? {
-        val lowercaseEmail = email?.toLowerCaseEmail()
-        return get(lowercaseEmail) ?: get(lowercaseEmail?.toCapitalizedEmail())
+    private fun Map<String, String>.getReasonId(
+        email: String?,
+        locale: Locale
+    ): String? {
+        val lowercaseEmail = email?.toLowerCaseEmail(locale)
+        return get(lowercaseEmail) ?: get(lowercaseEmail?.toCapitalizedEmail(locale))
     }
 
-    private fun String.toCapitalizedEmail(): String {
+    private fun String.toCapitalizedEmail(locale: Locale): String {
         val parts = split("@")
         if (parts.size != 2) return this
 
         return parts[0].split(".")
             .joinToString(".") { part ->
-                part.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                part.replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
             } + "@" + parts[1]
     }
 
