@@ -9,6 +9,10 @@ interface UserRepository {
 
     fun select(id: UserId): User?
 
+    fun selectAll(): List<User>
+
+    fun selectAllBirthdateReminderEnabled(): List<User>
+
     fun insert(id: UserId)
 
     fun updateBirthdate(
@@ -39,6 +43,10 @@ class UserRepositoryImpl(dataStore: DataStore) : UserRepository {
     private val queries = dataStore.userQueries
 
     override fun select(id: UserId) = queries.select(id).executeAsOneOrNull()
+
+    override fun selectAll(): List<User> = queries.selectAll().executeAsList()
+
+    override fun selectAllBirthdateReminderEnabled() = queries.selectAllBirthdateReminderEnabled().executeAsList()
 
     override fun insert(id: UserId) {
         queries.insert(id)

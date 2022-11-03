@@ -3,6 +3,15 @@ SELECT *
 FROM user
 WHERE id = ?;
 
+selectAll:
+SELECT *
+FROM user;
+
+selectAllBirthdateReminderEnabled:
+SELECT *
+FROM user
+WHERE enableBirthdateReminders = TRUE;
+
 insert:
 INSERT IGNORE INTO user(id)
 VALUES (?);

@@ -14,6 +14,24 @@ INNER JOIN teamUser
   AND teamUser.teamId = ?
 ORDER BY teamUser.admin DESC, user.id ASC;
 
+selectTeamMembersWithBirthdateForUser:
+SELECT user.*
+FROM user
+INNER JOIN teamUser
+  ON user.id = teamUser.userId
+  AND teamUser.teamId IN (
+    SELECT team.id
+    FROM team
+    INNER JOIN teamUser AS innerTeamUser
+      ON team.id = innerTeamUser.teamId
+      AND innerTeamUser.userId = :userId
+    ORDER BY team.name ASC
+  )
+WHERE user.id != :userId
+AND user.birthdate IS NOT NULL
+GROUP BY user.id
+ORDER BY teamUser.admin DESC, user.id ASC;
+
 insert:
 INSERT INTO team(name)
 VALUES (?);
