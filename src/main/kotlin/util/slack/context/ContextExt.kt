@@ -6,6 +6,8 @@ import com.slack.api.bolt.request.builtin.BlockActionRequest
 import com.slack.api.bolt.request.builtin.SlashCommandRequest
 import com.slack.api.bolt.request.builtin.ViewSubmissionRequest
 import com.slack.api.methods.response.chat.ChatPostMessageResponse
+import com.slack.api.methods.response.reactions.ReactionsAddResponse
+import com.slack.api.methods.response.reactions.ReactionsRemoveResponse
 import com.slack.api.methods.response.users.UsersInfoResponse
 import com.slack.api.model.Conversation
 import com.slack.api.model.block.LayoutBlock
@@ -29,10 +31,33 @@ fun Context.getConversation(name: String): Conversation? {
 fun Context.postChatMessageInChannel(
     channelName: String,
     blocksBuilder: () -> List<LayoutBlock>
-): ChatPostMessageResponse = slack.methods(config.token.bot).chatPostMessage { requestBuilder ->
+): ChatPostMessageResponse = client().chatPostMessage { requestBuilder ->
     requestBuilder
+        .token(config.token.bot)
         .channel(channelName)
         .blocks(blocksBuilder())
+}
+
+fun Context.addReactionToMessage(
+    channelId: String,
+    messageTimestamp: String,
+    emojiName: String
+): ReactionsAddResponse = client().reactionsAdd {
+    it.token(config.token.bot)
+    it.channel(channelId)
+    it.name(emojiName)
+    it.timestamp(messageTimestamp)
+}
+
+fun Context.removeReactionFromMessage(
+    channelId: String,
+    messageTimestamp: String,
+    emojiName: String
+): ReactionsRemoveResponse = client().reactionsRemove {
+    it.token(config.token.bot)
+    it.channel(channelId)
+    it.name(emojiName)
+    it.timestamp(messageTimestamp)
 }
 
 fun Context.getUser(userId: UserId): SlackUser? {
