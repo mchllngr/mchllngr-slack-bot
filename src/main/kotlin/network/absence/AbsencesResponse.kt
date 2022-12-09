@@ -10,8 +10,8 @@ data class AbsencesResponse(
 
     @Serializable
     data class Data(
-        val reasonId: String,
-        val assignedTo: AssignedTo
+        val reasonId: String? = null,
+        val assignedTo: AssignedTo? = null
     ) {
 
         @Serializable

@@ -41,7 +41,8 @@ class AbsenceApiClient(
         }
 
         return@runBlocking response.body<AbsencesResponse>().list
-            .associate { it.assignedTo.email to it.reasonId }
+            .filter { it.assignedTo != null && it.reasonId != null }
+            .associate { it.assignedTo!!.email to it.reasonId!! }
     }
 
     private fun getRequestBody(
