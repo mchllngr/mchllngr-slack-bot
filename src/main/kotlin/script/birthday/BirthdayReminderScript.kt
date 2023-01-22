@@ -130,7 +130,7 @@ class BirthdayReminderScript : MessageScript {
                 PERIOD_DAYS_1 -> "morgen"
                 PERIOD_DAYS_3 -> "in 3 Tagen"
                 PERIOD_DAYS_7 -> "in einer Woche"
-                else -> "bald"
+                else -> "in ${periodUntil.days} Tagen"
             }
 
             val age = if (includeBirthdateYear) {
