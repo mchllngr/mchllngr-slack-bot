@@ -1,8 +1,6 @@
 package script.home.block
 
-import com.slack.api.model.block.Blocks.section
 import com.slack.api.model.block.LayoutBlock
-import com.slack.api.model.block.composition.BlockCompositions.markdownText
 import db.Team
 import model.user.UserId
 import model.user.usernameString
@@ -46,8 +44,8 @@ class TeamBlocks(
             this += markdownSection("Teammitglieder *${team.name}*:")
 
             val usersInTeam = teamRepo.getUsersForTeam(team.id)
-                .map { user -> markdownText("${user.id.usernameString} ${if (user.admin) " *(Teamadmin)*" else ""}") }
-            this += section { it.fields(usersInTeam) }
+                .joinToString(separator = "\n") { user -> "${user.id.usernameString} ${if (user.admin) " *(Teamadmin)*" else ""}" }
+            this += markdownSection(usersInTeam)
         }
     }
 }
