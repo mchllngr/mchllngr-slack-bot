@@ -71,7 +71,9 @@ class AbsenceRepositoryImpl(private val absenceApiClient: AbsenceApiClient) : Ab
 
     private fun mapReasonIdToAvailability(reasonId: String?): Availability = when (reasonId) {
         "60daf6fcb5d4d20afb95a97a" -> Availability.AVAILABLE_HOME_OFFICE // mobile Arbeit (mit Freigabe)
+        "641c7f763c81a3f2b73458c1" -> Availability.AVAILABLE_HOME_OFFICE // mobile Arbeit (mit Freigabe) - kränkelnd: Ansteckungsgefahr
         "60daf6bab5dc1f0a17142ab4" -> Availability.AVAILABLE_HOME_OFFICE // mobile Arbeit (ohne Freigabe)
+        "641c7f34a863afe0865d5a91" -> Availability.AVAILABLE_HOME_OFFICE // mobile Arbeit (ohne Freigabe) - kränkelnd: Ansteckungsgefahr
         null -> Availability.AVAILABLE_OFFICE
         else -> Availability.UNAVAILABLE
     }
