@@ -1,5 +1,5 @@
 # Build with gradle image
-FROM gradle:7.5.1 as builder
+FROM gradle:8.1.1 as builder
 
 # Set build info, will be overridden
 ARG SLACK_BOT_VERSION=unknown
@@ -18,7 +18,7 @@ COPY src/ src/
 RUN gradle clean build --no-daemon
 
 # Switch to the java runtime image
-FROM eclipse-temurin:18-jre-alpine
+FROM eclipse-temurin:20-jre-alpine
 
 # Set working dir
 WORKDIR /
